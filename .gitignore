@@ -1,0 +1,40 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# ============================================
+# NimbusEdge CMS — Compiled Build Artifacts
+# ============================================
+# Gulp compiles .ignore/ sources → parent directory.
+# Track source files in .ignore/, exclude compiled output.
+
+# Compiled scripts (built from scripts/.ignore/)
+scripts/app.js
+scripts/core.js
+scripts/bootstrap.js
+
+# Compiled styles (built from styles/.ignore/)
+styles/main.css
+styles/lazy.css
+
+# Compiled component assets (built from components/{name}/.ignore/)
+components/*/*.js
+components/*/*.css
+
+# NimbusEdge local server artifacts
+.nimbusedge/
