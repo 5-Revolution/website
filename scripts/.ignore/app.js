@@ -73,8 +73,12 @@ class SiteScrollAnimations {
     return window.innerWidth < this.config.mobileBreakpoint;
   }
 
+  isTouchDevice() {
+    return document.body.classList.contains('touch-device');
+  }
+
   initLenis() {
-    if (this.isMobile() && !this.config.smoothScrollMobile) return;
+    if (this.isTouchDevice()) return;
     if (this.prefersReducedMotion) return;
     if (typeof Lenis === 'undefined') return;
 
@@ -88,6 +92,8 @@ class SiteScrollAnimations {
       touchMultiplier: 2,
       infinite: false,
     });
+
+    this.lenis.on('scroll', ScrollTrigger.update);
 
     gsap.ticker.add((time) => {
       this.lenis.raf(time * 1000);
@@ -386,13 +392,13 @@ class SiteScrollAnimations {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
         if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
-        if (!this.config.smoothScrollMobile) {
-          if (this.isMobile() && this.lenis) {
+        if (this.isTouchDevice()) {
+          if (this.lenis) {
             this.lenis.destroy();
             this.lenis = null;
-          } else if (!this.isMobile() && !this.lenis && !this.prefersReducedMotion) {
-            this.initLenis();
           }
+        } else if (!this.lenis && !this.prefersReducedMotion) {
+          this.initLenis();
         }
       }, 250);
     });
@@ -604,6 +610,8 @@ class SiteProgressiveEnhancement extends core.ProgressiveEnhancement {
       await SiteProgressiveEnhancement.loadScript('/scripts/gsap.js');
       await SiteProgressiveEnhancement.loadScript('/scripts/ScrollTrigger.js');
       gsap.registerPlugin(ScrollTrigger);
+      ScrollTrigger.config({ ignoreMobileResize: true });
+      gsap.config({ force3D: true });
     } catch (error) {
       console.warn('Failed to load GSAP/ScrollTrigger:', error);
     }
@@ -626,6 +634,11 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
   }
 
   async init() {
+    // Touch detection — used by Lenis, ScrollTrigger, CSS
+    if (navigator.maxTouchPoints > 0) {
+      document.body.classList.add('touch-device');
+    }
+
     // Phase 1: Critical components (nav)
     this.criticalExecutor.executeImmediate();
 
