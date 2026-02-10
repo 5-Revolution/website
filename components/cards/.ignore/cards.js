@@ -6,10 +6,8 @@
  *
  * Classes (visual patterns, reusable across pages):
  *   .numbered      — Auto-increment number badge (01, 02, 03...)
- *   .md-6          — 2-column grid (col-md-6)
- *   .md-4          — 3-column grid (col-md-4)
- *   .lg-4          — 3-column grid at lg (col-lg-4)
- *   .lg-6          — 2-column grid at lg (col-lg-6)
+ *   .phased        — Phase label (Phase 1, Phase 2...) with phase-card styling
+ *   .6, .md-6, .lg-3 — Column widths (col-6, col-md-6, col-lg-3). Multiple supported.
  *   .aligned-left  — Left-aligned text (default)
  *   .aligned-center — Center-aligned text
  *   .cta           — Cards with links are fully clickable (stretched link)
@@ -27,12 +25,14 @@ export default async function initializeCards(component) {
 
 function buildCards(component, { createElement }) {
   const isNumbered = component.classList.contains('numbered');
+  const isPhased = component.classList.contains('phased');
   const hasCtaArrow = component.classList.contains('cta-arrow');
 
-  // Determine column class from component classes
-  const colPatterns = ['md-4', 'md-6', 'lg-4', 'lg-6'];
-  const colMatch = colPatterns.find((p) => component.classList.contains(p));
-  const colClass = colMatch ? `col-${colMatch}` : 'col-md-6';
+  // Determine column classes from component classes (supports multiple: 6 md-6 lg-3)
+  const colClasses = [...component.classList]
+    .filter((c) => /^(?:\d+|(?:sm|md|lg|xl|xxl)-\d+)$/.test(c))
+    .map((c) => `col-${c}`);
+  if (!colClasses.length) colClasses.push('col-md-6');
 
   const rows = [...component.children];
   const fragment = document.createDocumentFragment();
@@ -46,8 +46,14 @@ function buildCards(component, { createElement }) {
     const h3 = col.querySelector('h3');
     const paragraphs = col.querySelectorAll(':scope > p');
 
-    const gridCol = createElement('div', [colClass]);
-    const card = createElement('div', ['card-item']);
+    const gridCol = createElement('div', colClasses);
+    const cardClass = isPhased ? 'phase-card' : 'card-item';
+    const card = createElement('div', [cardClass]);
+
+    // Phase attribute for ::before label
+    if (isPhased) {
+      card.dataset.phase = `Phase ${index + 1}`;
+    }
 
     // Auto-number badge
     if (isNumbered) {
@@ -58,7 +64,8 @@ function buildCards(component, { createElement }) {
 
     // Title
     if (h3) {
-      const title = createElement('h3', ['card-title']);
+      const titleTag = isPhased ? 'h4' : 'h3';
+      const title = createElement(titleTag, ['card-title']);
       title.innerHTML = h3.innerHTML;
       card.appendChild(title);
     }

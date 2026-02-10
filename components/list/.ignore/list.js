@@ -53,10 +53,13 @@ function buildList(component, { createElement }) {
     const ul = col?.querySelector('ul');
     buildStatBar(fragment, { createElement, ul });
   } else if (isCardDark && isTwoCol) {
-    buildDarkBlock(component, fragment, { createElement });
+    const isLabeled = component.classList.contains('labeled');
+    buildDarkBlock(component, fragment, { createElement, isLabeled });
   } else if (isTwoCol) {
     const isLabeled = component.classList.contains('labeled');
-    buildTwoColList(component, fragment, { createElement, isLabeled });
+    const isChecked = component.classList.contains('checked');
+    const isOneList = component.classList.contains('one-list');
+    buildTwoColList(component, fragment, { createElement, isLabeled, isChecked, isOneList });
   } else if (isNumbered) {
     const col = component.querySelector(':scope > div > div');
     const ul = col?.querySelector('ul');
@@ -93,28 +96,42 @@ function buildBulletedList(fragment, { createElement, ul, colClass }) {
 // Variant: Dark Block (card-dark two-col left-heading)
 // Two CMS rows: Row 1 = heading content, Row 2 = list
 // ============================================
-function buildDarkBlock(component, fragment, { createElement }) {
+function buildDarkBlock(component, fragment, { createElement, isLabeled }) {
   const rows = [...component.children];
   const row1Col = rows[0]?.querySelector(':scope > div');
   const row2Col = rows[1]?.querySelector(':scope > div');
 
   const h2 = row1Col?.querySelector('h2');
-  const subtitleP = row1Col?.querySelector('p');
+  const paragraphs = row1Col ? [...row1Col.querySelectorAll(':scope > p')] : [];
   const ul = row2Col?.querySelector('ul');
 
   const container = createElement('div', ['container']);
   const block = createElement('div', ['dark-block']);
   const row = createElement('div', ['row', 'align-items-center']);
 
-  // Left column: heading + lead
+  // Left column: heading + label/lead
   const leftCol = createElement('div', ['col-lg-5', 'mb-4', 'mb-lg-0']);
+
+  paragraphs.forEach((p) => {
+    if (isLabeled && h2 && (p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+      // Paragraph before h2 with labeled = section label
+      const label = createElement('p', ['section-label']);
+      label.textContent = p.textContent.trim();
+      leftCol.appendChild(label);
+    }
+  });
+
   if (h2) {
     leftCol.appendChild(h2);
   }
-  if (subtitleP) {
-    subtitleP.classList.add('lead');
-    leftCol.appendChild(subtitleP);
-  }
+
+  paragraphs.forEach((p) => {
+    if (h2 && (p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      // Paragraph after h2 = lead
+      p.classList.add('lead');
+      leftCol.appendChild(p);
+    }
+  });
 
   // Right column: list
   const rightCol = createElement('div', ['col-lg-6', 'offset-lg-1']);
@@ -134,7 +151,7 @@ function buildDarkBlock(component, fragment, { createElement }) {
 // Variant: Two-Column Layout (labeled two-col left-heading)
 // Two CMS rows: Row 1 = heading content, Row 2 = categorized list
 // ============================================
-function buildTwoColList(component, fragment, { createElement, isLabeled }) {
+function buildTwoColList(component, fragment, { createElement, isLabeled, isChecked, isOneList }) {
   const rows = [...component.children];
   const row1Col = rows[0]?.querySelector(':scope > div');
   const row2Col = rows[1]?.querySelector(':scope > div');
@@ -178,10 +195,39 @@ function buildTwoColList(component, fragment, { createElement, isLabeled }) {
 
   leftCol.appendChild(header);
 
-  // Right column: product lists from nested ul structure
+  // Right column
   const rightCol = createElement('div', ['col-lg-6', 'offset-lg-1']);
 
-  if (ul) {
+  if (ul && isChecked) {
+    // Checked variant: flat list with check SVG icons
+    ul.classList.add('capability-list');
+    ul.querySelectorAll(':scope > li').forEach((li) => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'check-icon');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linejoin', 'round');
+      svg.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+
+      const span = createElement('span');
+      span.innerHTML = li.innerHTML;
+      li.innerHTML = '';
+      li.appendChild(svg);
+      li.appendChild(span);
+    });
+    rightCol.appendChild(ul);
+  } else if (ul && isOneList) {
+    // Single-column product list (flat items with bullet spans)
+    ul.classList.add('product-list');
+    ul.querySelectorAll(':scope > li').forEach((item) => {
+      const bullet = createElement('span', ['product-bullet']);
+      item.insertBefore(bullet, item.firstChild);
+    });
+    rightCol.appendChild(ul);
+  } else if (ul) {
+    // Product lists from nested ul structure (two-column categorized grid)
     const innerRow = createElement('div', ['row', 'g-4']);
     const items = ul.querySelectorAll(':scope > li');
 
