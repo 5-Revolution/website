@@ -54,6 +54,9 @@ function buildList(component, { createElement }) {
     buildStatBar(fragment, { createElement, ul });
   } else if (isCardDark && isTwoCol) {
     buildDarkBlock(component, fragment, { createElement });
+  } else if (isTwoCol) {
+    const isLabeled = component.classList.contains('labeled');
+    buildTwoColList(component, fragment, { createElement, isLabeled });
   } else if (isNumbered) {
     const col = component.querySelector(':scope > div > div');
     const ul = col?.querySelector('ul');
@@ -124,6 +127,93 @@ function buildDarkBlock(component, fragment, { createElement }) {
   row.appendChild(rightCol);
   block.appendChild(row);
   container.appendChild(block);
+  fragment.appendChild(container);
+}
+
+// ============================================
+// Variant: Two-Column Layout (labeled two-col left-heading)
+// Two CMS rows: Row 1 = heading content, Row 2 = categorized list
+// ============================================
+function buildTwoColList(component, fragment, { createElement, isLabeled }) {
+  const rows = [...component.children];
+  const row1Col = rows[0]?.querySelector(':scope > div');
+  const row2Col = rows[1]?.querySelector(':scope > div');
+
+  const h2 = row1Col?.querySelector('h2');
+  const paragraphs = row1Col ? [...row1Col.querySelectorAll(':scope > p')] : [];
+  const ul = row2Col?.querySelector('ul');
+
+  const container = createElement('div', ['container']);
+  const gridRow = createElement('div', ['row']);
+
+  // Left column: section header
+  const leftCol = createElement('div', ['col-lg-5', 'mb-4', 'mb-lg-0']);
+  const header = createElement('div', ['section-header']);
+
+  let sectionLabel = null;
+  const leadParagraphs = [];
+
+  paragraphs.forEach((p) => {
+    if (isLabeled && !sectionLabel && h2 && (p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+      sectionLabel = p.textContent.trim();
+    } else if (h2 && (p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_PRECEDING)) {
+      leadParagraphs.push(p);
+    }
+  });
+
+  if (sectionLabel) {
+    const label = createElement('p', ['section-label']);
+    label.textContent = sectionLabel;
+    header.appendChild(label);
+  }
+
+  if (h2) {
+    header.appendChild(h2);
+  }
+
+  leadParagraphs.forEach((p) => {
+    p.classList.add('lead');
+    header.appendChild(p);
+  });
+
+  leftCol.appendChild(header);
+
+  // Right column: product lists from nested ul structure
+  const rightCol = createElement('div', ['col-lg-6', 'offset-lg-1']);
+
+  if (ul) {
+    const innerRow = createElement('div', ['row', 'g-4']);
+    const items = ul.querySelectorAll(':scope > li');
+
+    items.forEach((li) => {
+      const col = createElement('div', ['col-md-6']);
+      const strong = li.querySelector(':scope > strong');
+      const nestedUl = li.querySelector(':scope > ul');
+
+      if (strong) {
+        const heading = createElement('h5', ['product-list-heading']);
+        heading.textContent = strong.textContent;
+        col.appendChild(heading);
+      }
+
+      if (nestedUl) {
+        nestedUl.classList.add('product-list');
+        nestedUl.querySelectorAll(':scope > li').forEach((item) => {
+          const bullet = createElement('span', ['product-bullet']);
+          item.insertBefore(bullet, item.firstChild);
+        });
+        col.appendChild(nestedUl);
+      }
+
+      innerRow.appendChild(col);
+    });
+
+    rightCol.appendChild(innerRow);
+  }
+
+  gridRow.appendChild(leftCol);
+  gridRow.appendChild(rightCol);
+  container.appendChild(gridRow);
   fragment.appendChild(container);
 }
 

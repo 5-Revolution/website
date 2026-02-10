@@ -4,11 +4,18 @@
 // Hero Component
 // ============================================
 .component.hero {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   position: relative;
   overflow: hidden;
+  padding-top: 6rem;
+  padding-bottom: 3rem;
+
+  &.vh-100 {
+    min-height: 100vh;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
 // Remove section padding when it contains a hero
@@ -27,9 +34,8 @@ section:has(.component.hero) {
   padding-bottom: 3rem;
 }
 
-.hero-content {
-  max-width: 720px;
-
+// Hero typography (applies to both hero-logo and regular heroes)
+.component.hero {
   .display-headline {
     margin-bottom: 1.5rem;
     color: #ffffff;
@@ -39,6 +45,18 @@ section:has(.component.hero) {
     margin-bottom: 2rem;
     color: rgba(255, 255, 255, 0.7);
   }
+
+  .section-label {
+    color: $accent-warm;
+    // Override scroll animation initial state — hero labels should be visible immediately
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// Hero-logo content max-width constraint
+.hero-content {
+  max-width: 720px;
 }
 
 // ============================================
@@ -93,9 +111,8 @@ section:has(.component.hero) {
 // Responsive
 // ============================================
 @media (max-width: 991.98px) {
-  .component.hero {
+  .component.hero.vh-100 {
     min-height: auto;
-    padding-top: 6rem;
   }
 
   .hero-inner {

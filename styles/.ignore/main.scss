@@ -188,6 +188,32 @@ section {
   border-bottom: 1px solid rgba($subtleGray, 0.6);
 }
 
+// ============================================
+// Labeled Default Wrapper (blockquote/promise sections)
+// ============================================
+section.labeled .default-wrapper {
+  text-align: center;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+
+  > p:first-child > em {
+    font-style: normal;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $accent-warm;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  > p > strong:only-child {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+    display: block;
+  }
+}
+
 // Hero styles are in components/hero/.ignore/hero.scss (loaded eagerly via data-priority="critical")
 
 // ============================================

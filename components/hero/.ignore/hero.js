@@ -1,19 +1,25 @@
 /*
  * Hero Component — 5th Revolution
  * Critical component inside <section class="section-dark">.
- * Transforms CMS two-column row into full-height hero with rotating background logo.
+ * Transforms CMS content into a full-height hero section.
  *
- * CMS input:
- *   Row 1, Col 1: H1 + description paragraph + CTA link
- *   Row 1, Col 2: Link to background SVG asset (e.g. /assets/logo.svg)
+ * CMS input (single column):
+ *   Optional: <p> section label (first p before h1, when .labeled)
+ *   <h1> headline
+ *   Optional: <p> description (p after h1, no link)
+ *   Optional: <p><a class="btn-primary"> CTA link
  *
  * Classes:
- *   .hero-logo — Adds continuously rotating background logo + grid pattern
+ *   .hero-logo  — Adds rotating background logo + grid pattern + hero-inner/hero-content wrappers
+ *   .labeled    — First <p> before h1 becomes a section label
+ *   .lg-8, etc. — Bootstrap column width (default: col-lg-10)
  *
- * Output:
- *   - Rotating SVG background logo (from .hero-logo class)
- *   - Grid pattern overlay
- *   - Hero content: display-headline h1, subheadline p, btn-lg CTA
+ * Output (hero-logo):
+ *   container > hero-inner > row > col > hero-content > [label, h1, p, btn]
+ *   + absolute-positioned background logo + grid pattern
+ *
+ * Output (regular):
+ *   container > row > col > [label, h1, p, btn]
  */
 
 export default async function initializeHero(component) {
@@ -27,19 +33,20 @@ export default async function initializeHero(component) {
 
 function buildHero(component, { createElement }) {
   const hasHeroLogo = component.classList.contains('hero-logo');
+  const isLabeled = component.classList.contains('labeled');
 
-  // Extract content from CMS row
-  const row = component.children[0];
-  if (!row) return;
+  // Parse column width from classes (lg-8, lg-10, etc.)
+  const colMatch = [...component.classList].find((c) => /^(sm|md|lg|xl|xxl)-\d+$/.test(c));
+  const colClass = colMatch ? `col-${colMatch}` : 'col-lg-10';
 
-  const columns = [...row.children];
-  const contentCol = columns[0];
+  // Extract content from CMS structure (component > div > div > content)
+  const contentCol = component.querySelector(':scope > div > div');
+  if (!contentCol) return;
 
-  // Extract heading
-  const h1 = contentCol?.querySelector('h1');
+  const h1 = contentCol.querySelector('h1');
+  const paragraphs = [...contentCol.querySelectorAll(':scope > p')];
 
-  // Extract paragraphs (description + CTA)
-  const paragraphs = contentCol?.querySelectorAll('p') || [];
+  let sectionLabel = null;
   let descriptionText = '';
   let ctaLink = null;
 
@@ -47,15 +54,16 @@ function buildHero(component, { createElement }) {
     const btn = p.querySelector('a.btn-primary');
     if (btn) {
       ctaLink = btn;
+    } else if (isLabeled && !sectionLabel && h1 && (p.compareDocumentPosition(h1) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+      sectionLabel = p.textContent.trim();
     } else if (p.textContent.trim()) {
       descriptionText = p.innerHTML;
     }
   });
 
-  // Build hero structure
   const fragment = document.createDocumentFragment();
 
-  // Background rotating logo (if hero-logo class)
+  // Background rotating logo (hero-logo only)
   if (hasHeroLogo) {
     const bgLogo = createElement('div', ['hero-bg-logo']);
     bgLogo.innerHTML = `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,44 +77,60 @@ function buildHero(component, { createElement }) {
       </svg>`;
     fragment.appendChild(bgLogo);
 
-    // Grid pattern
     const gridPattern = createElement('div', ['hero-grid-pattern']);
     fragment.appendChild(gridPattern);
   }
 
-  // Content container
+  // Build content elements
   const container = createElement('div', ['container']);
-  const heroInner = createElement('div', ['hero-inner']);
   const bsRow = createElement('div', ['row']);
-  const col = createElement('div', ['col-lg-10']);
-  const heroContent = createElement('div', ['hero-content']);
+  const col = createElement('div', [colClass]);
 
-  // Heading
-  if (h1) {
-    h1.classList.add('display-headline');
-    heroContent.appendChild(h1);
+  if (hasHeroLogo) {
+    // Hero-logo variant: hero-inner + hero-content wrappers for flex centering + max-width
+    const heroInner = createElement('div', ['hero-inner']);
+    const heroContent = createElement('div', ['hero-content']);
+
+    appendHeroContent(heroContent, { createElement, sectionLabel, h1, descriptionText, ctaLink });
+
+    col.appendChild(heroContent);
+    bsRow.appendChild(col);
+    heroInner.appendChild(bsRow);
+    container.appendChild(heroInner);
+  } else {
+    // Regular hero: content directly in column, no extra wrappers
+    appendHeroContent(col, { createElement, sectionLabel, h1, descriptionText, ctaLink });
+
+    bsRow.appendChild(col);
+    container.appendChild(bsRow);
   }
 
-  // Description
+  fragment.appendChild(container);
+
+  while (component.firstChild) component.removeChild(component.firstChild);
+  component.appendChild(fragment);
+}
+
+function appendHeroContent(target, { createElement, sectionLabel, h1, descriptionText, ctaLink }) {
+  if (sectionLabel) {
+    const label = createElement('p', ['section-label']);
+    label.textContent = sectionLabel;
+    target.appendChild(label);
+  }
+
+  if (h1) {
+    h1.classList.add('display-headline');
+    target.appendChild(h1);
+  }
+
   if (descriptionText) {
     const desc = createElement('p', ['subheadline']);
     desc.innerHTML = descriptionText;
-    heroContent.appendChild(desc);
+    target.appendChild(desc);
   }
 
-  // CTA button
   if (ctaLink) {
     ctaLink.classList.add('btn-lg');
-    heroContent.appendChild(ctaLink);
+    target.appendChild(ctaLink);
   }
-
-  col.appendChild(heroContent);
-  bsRow.appendChild(col);
-  heroInner.appendChild(bsRow);
-  container.appendChild(heroInner);
-  fragment.appendChild(container);
-
-  // Replace component content
-  while (component.firstChild) component.removeChild(component.firstChild);
-  component.appendChild(fragment);
 }
