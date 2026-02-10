@@ -36,8 +36,6 @@ class SiteScrollAnimations {
       stagger: { cards: 0.12, list: 0.08, grid: 0.1 },
       triggerStart: 'top 85%',
       triggerStartEarly: 'top 90%',
-      mobileBreakpoint: 768,
-      smoothScrollMobile: false,
     };
   }
 
@@ -69,12 +67,46 @@ class SiteScrollAnimations {
     });
   }
 
-  isMobile() {
-    return window.innerWidth < this.config.mobileBreakpoint;
+  isTouchDevice() {
+    return document.documentElement.classList.contains('touch-device');
   }
 
-  isTouchDevice() {
-    return document.body.classList.contains('touch-device');
+  // On touch: IntersectionObserver (zero scroll impact, fully passive)
+  // On desktop: ScrollTrigger (synced with Lenis)
+  observe(trigger, start, callback) {
+    const margin = start === this.config.triggerStartEarly ? '-10%' : '-15%';
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          callback();
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: `0px 0px ${margin} 0px` });
+    observer.observe(trigger);
+  }
+
+  animateOnScroll(elements, props, trigger, start = this.config.triggerStart) {
+    if (this.isTouchDevice()) {
+      const tween = gsap.to(elements, { ...props, paused: true });
+      this.observe(trigger, start, () => tween.play());
+      return tween;
+    }
+    return gsap.to(elements, {
+      ...props,
+      scrollTrigger: { trigger, start, toggleActions: 'play none none none' },
+    });
+  }
+
+  timelineOnScroll(trigger, start = this.config.triggerStart) {
+    if (this.isTouchDevice()) {
+      const tl = gsap.timeline({ paused: true });
+      this.observe(trigger, start, () => tl.play());
+      return tl;
+    }
+    return gsap.timeline({
+      scrollTrigger: { trigger, start, toggleActions: 'play none none none' },
+    });
   }
 
   initLenis() {
@@ -137,13 +169,7 @@ class SiteScrollAnimations {
       const sub = header.querySelector('.subheadline');
       const label = header.querySelector('.section-label');
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: header,
-          start: this.config.triggerStart,
-          toggleActions: 'play none none none',
-        },
-      });
+      const tl = this.timelineOnScroll(header);
 
       if (label) {
         tl.to(label, { opacity: 1, y: 0, duration: this.config.duration.fast, ease: this.config.ease }, 0);
@@ -172,11 +198,10 @@ class SiteScrollAnimations {
     });
 
     rows.forEach((rowCards, row) => {
-      gsap.to(rowCards, {
+      this.animateOnScroll(rowCards, {
         opacity: 1, y: 0, duration: this.config.duration.normal,
         stagger: this.config.stagger.cards, ease: this.config.ease,
-        scrollTrigger: { trigger: row, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      }, row);
     });
   }
 
@@ -185,17 +210,15 @@ class SiteScrollAnimations {
     if (!statsBar || statsBar.dataset.gsapAnimated) return;
     statsBar.dataset.gsapAnimated = '1';
 
-    gsap.to(statsBar, {
+    this.animateOnScroll(statsBar, {
       opacity: 1, scale: 1, duration: this.config.duration.fast, ease: this.config.ease,
-      scrollTrigger: { trigger: statsBar, start: this.config.triggerStart, toggleActions: 'play none none none' },
-    });
+    }, statsBar);
 
     const statItems = statsBar.querySelectorAll('.stat-item');
-    gsap.to(statItems, {
+    this.animateOnScroll(statItems, {
       opacity: 1, y: 0, duration: this.config.duration.slow,
       stagger: this.config.stagger.list, ease: this.config.ease,
-      scrollTrigger: { trigger: statsBar, start: this.config.triggerStart, toggleActions: 'play none none none' },
-    });
+    }, statsBar);
 
     statItems.forEach((item) => {
       const valueEl = item.querySelector('.stat-value');
@@ -206,11 +229,10 @@ class SiteScrollAnimations {
         const targetNum = parseInt(match[1], 10);
         const suffix = match[2] || '';
         const counter = { value: 0 };
-        gsap.to(counter, {
+        this.animateOnScroll(counter, {
           value: targetNum, duration: 1.5, ease: 'power1.out',
-          scrollTrigger: { trigger: item, start: this.config.triggerStart, toggleActions: 'play none none none' },
           onUpdate() { valueEl.textContent = Math.round(counter.value) + suffix; },
-        });
+        }, item);
       }
     });
   }
@@ -218,11 +240,10 @@ class SiteScrollAnimations {
   animateBulletedLists() {
     this.newElements('.bulleted-list').forEach((list) => {
       const items = list.querySelectorAll('li');
-      gsap.to(items, {
+      this.animateOnScroll(items, {
         opacity: 1, y: 0, duration: this.config.duration.fast,
         stagger: this.config.stagger.list, ease: this.config.ease,
-        scrollTrigger: { trigger: list, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      }, list);
     });
   }
 
@@ -233,9 +254,7 @@ class SiteScrollAnimations {
       const label = block.querySelector('.section-label');
       const listItems = block.querySelectorAll('.dark-block-list li');
 
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: block, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      const tl = this.timelineOnScroll(block);
 
       if (label) tl.to(label, { opacity: 1, y: 0, duration: this.config.duration.fast, ease: this.config.ease }, 0);
       if (h2) tl.to(h2, { opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease }, 0.1);
@@ -255,11 +274,10 @@ class SiteScrollAnimations {
     const container = steps[0].closest('.numbered-grid');
     if (!container) return;
 
-    gsap.to(steps, {
+    this.animateOnScroll(steps, {
       opacity: 1, y: 0, duration: this.config.duration.normal,
       stagger: 0.2, ease: this.config.ease,
-      scrollTrigger: { trigger: container, start: this.config.triggerStart, toggleActions: 'play none none none' },
-    });
+    }, container);
   }
 
   animatePhaseCards() {
@@ -268,11 +286,10 @@ class SiteScrollAnimations {
     const container = cards[0].closest('.row');
     if (!container) return;
 
-    gsap.to(cards, {
+    this.animateOnScroll(cards, {
       opacity: 1, y: 0, duration: this.config.duration.normal,
       stagger: this.config.stagger.cards, ease: this.config.ease,
-      scrollTrigger: { trigger: container, start: this.config.triggerStart, toggleActions: 'play none none none' },
-    });
+    }, container);
   }
 
   animateFeatureBlocks() {
@@ -286,31 +303,28 @@ class SiteScrollAnimations {
     });
 
     rows.forEach((rowBlocks, row) => {
-      gsap.to(rowBlocks, {
+      this.animateOnScroll(rowBlocks, {
         opacity: 1, y: 0, duration: this.config.duration.fast,
         stagger: this.config.stagger.grid, ease: this.config.ease,
-        scrollTrigger: { trigger: row, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      }, row);
     });
   }
 
   animateCapabilityLists() {
     this.newElements('.capability-list').forEach((list) => {
       const items = list.querySelectorAll('li');
-      gsap.to(items, {
+      this.animateOnScroll(items, {
         opacity: 1, y: 0, duration: this.config.duration.fast,
         stagger: 0.05, ease: this.config.ease,
-        scrollTrigger: { trigger: list, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      }, list);
     });
   }
 
   animateBlockquotes() {
     this.newElements('.blockquote-feature').forEach((quote) => {
-      gsap.to(quote, {
+      this.animateOnScroll(quote, {
         opacity: 1, y: 0, duration: this.config.duration.slow, ease: this.config.ease,
-        scrollTrigger: { trigger: quote, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      }, quote);
     });
   }
 
@@ -320,9 +334,7 @@ class SiteScrollAnimations {
       const p = block.querySelector('p');
       const btn = block.querySelector('.btn');
 
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: block, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      const tl = this.timelineOnScroll(block);
 
       if (h2) tl.to(h2, { opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease }, 0);
       if (p) tl.to(p, { opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease }, 0.1);
@@ -333,45 +345,40 @@ class SiteScrollAnimations {
   animateProductLists() {
     this.newElements('.product-list').forEach((list) => {
       const items = list.querySelectorAll('li');
-      gsap.to(items, {
+      this.animateOnScroll(items, {
         opacity: 1, y: 0, duration: this.config.duration.fast,
         stagger: 0.05, ease: this.config.ease,
-        scrollTrigger: { trigger: list, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      }, list);
     });
   }
 
   animateCredibilityText() {
     this.newElements('.credibility-text').forEach((text) => {
-      gsap.to(text, {
+      this.animateOnScroll(text, {
         opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease,
-        scrollTrigger: { trigger: text, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      }, text);
     });
   }
 
   animateContactPage() {
     const formWrapper = document.querySelector('.contact-form-wrapper');
     if (formWrapper) {
-      gsap.to(formWrapper, {
+      this.animateOnScroll(formWrapper, {
         opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease,
-        scrollTrigger: { trigger: formWrapper, start: this.config.triggerStartEarly, toggleActions: 'play none none none' },
-      });
+      }, formWrapper, this.config.triggerStartEarly);
     }
 
     const contactInfo = document.querySelector('.contact-info');
     if (contactInfo) {
-      gsap.to(contactInfo, {
+      this.animateOnScroll(contactInfo, {
         opacity: 1, y: 0, duration: this.config.duration.normal, delay: 0.1, ease: this.config.ease,
-        scrollTrigger: { trigger: contactInfo, start: this.config.triggerStartEarly, toggleActions: 'play none none none' },
-      });
+      }, contactInfo, this.config.triggerStartEarly);
       const expectItems = contactInfo.querySelectorAll('.expect-item');
       if (expectItems.length) {
-        gsap.to(expectItems, {
+        this.animateOnScroll(expectItems, {
           opacity: 1, y: 0, duration: this.config.duration.fast,
           stagger: this.config.stagger.list, delay: 0.2, ease: this.config.ease,
-          scrollTrigger: { trigger: contactInfo, start: this.config.triggerStartEarly, toggleActions: 'play none none none' },
-        });
+        }, contactInfo, this.config.triggerStartEarly);
       }
     }
   }
@@ -379,10 +386,9 @@ class SiteScrollAnimations {
   animateLeadText() {
     this.newElements('.lead:not(.hero-content .subheadline)').forEach((lead) => {
       if (lead.closest('.dark-block')) return;
-      gsap.to(lead, {
+      this.animateOnScroll(lead, {
         opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease,
-        scrollTrigger: { trigger: lead, start: this.config.triggerStart, toggleActions: 'play none none none' },
-      });
+      }, lead);
     });
   }
 
@@ -634,9 +640,9 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
   }
 
   async init() {
-    // Touch detection — used by Lenis, ScrollTrigger, CSS
+    // Touch detection — used by Lenis, scroll animations, CSS
     if (navigator.maxTouchPoints > 0) {
-      document.body.classList.add('touch-device');
+      document.documentElement.classList.add('touch-device');
     }
 
     // Phase 1: Critical components (nav)

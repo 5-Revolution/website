@@ -172,11 +172,9 @@ section {
   background-color: $primary;
   color: #ffffff;
 
-  .default-wrapper {
-    h1, h2, h3, h4, h5, h6 { color: #ffffff; }
-    p { color: rgba(255, 255, 255, 0.85); }
-    .subheadline { color: rgba(255, 255, 255, 0.7); }
-  }
+  h1, h2, h3, h4, h5, h6 { color: #ffffff; }
+  p { color: rgba(255, 255, 255, 0.85); }
+  .subheadline { color: rgba(255, 255, 255, 0.7); }
 }
 
 // ============================================
@@ -382,6 +380,17 @@ $animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
 // ============================================
 // Lenis Smooth Scroll
 // ============================================
+
+// Touch devices: override Bootstrap's :root { scroll-behavior: smooth }
+// (Lenis is off on touch — without .lenis-smooth, Bootstrap's rule causes
+// jerky mid-scroll stops on iOS Safari)
+html.touch-device {
+  scroll-behavior: auto !important;
+  // Tell browser: vertical pan only, don't wait to determine gesture type
+  // Eliminates first-swipe hesitation when changing scroll direction
+  touch-action: pan-y;
+}
+
 html.lenis,
 html.lenis body {
   height: auto;
