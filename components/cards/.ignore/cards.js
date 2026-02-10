@@ -12,7 +12,8 @@
  *   .lg-6          — 2-column grid at lg (col-lg-6)
  *   .aligned-left  — Left-aligned text (default)
  *   .aligned-center — Center-aligned text
- *   .cta-arrow     — CTA links get arrow decoration
+ *   .cta           — Cards with links are fully clickable (stretched link)
+ *   .cta-arrow     — Same as .cta + arrow decoration on links
  */
 
 export default async function initializeCards(component) {

@@ -17,6 +17,12 @@
     transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba($primary, 0.08);
   }
+
+  // Cards with CTA links are fully clickable
+  [class*="cta"] & {
+    position: relative;
+    cursor: pointer;
+  }
 }
 
 .card-number {
@@ -48,12 +54,20 @@
   gap: 0.5rem;
   transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+  // Stretch link over entire card when component has cta class
+  [class*="cta"] &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+  }
+
   .arrow {
     display: inline-block;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &:hover {
+  .card-item:hover & {
     color: $accent-warm;
 
     .arrow {
