@@ -1,0 +1,481 @@
+// ============================================
+// 5th Revolution — Deferred CSS (lazy.scss)
+// Loaded non-blocking after critical components
+// ============================================
+
+@use "sass:color";
+@import "./variables";
+
+// Bootstrap deferred modules
+@import "../../node_modules/bootstrap/scss/images";
+@import "../../node_modules/bootstrap/scss/forms";
+@import "../../node_modules/bootstrap/scss/buttons";
+@import "../../node_modules/bootstrap/scss/transitions";
+@import "../../node_modules/bootstrap/scss/dropdown";
+@import "../../node_modules/bootstrap/scss/button-group";
+@import "../../node_modules/bootstrap/scss/nav";
+@import "../../node_modules/bootstrap/scss/navbar";
+@import "../../node_modules/bootstrap/scss/card";
+@import "../../node_modules/bootstrap/scss/badge";
+@import "../../node_modules/bootstrap/scss/alert";
+@import "../../node_modules/bootstrap/scss/list-group";
+@import "../../node_modules/bootstrap/scss/close";
+@import "../../node_modules/bootstrap/scss/modal";
+@import "../../node_modules/bootstrap/scss/carousel";
+@import "../../node_modules/bootstrap/scss/offcanvas";
+@import "../../node_modules/bootstrap/scss/helpers";
+@import "../../node_modules/bootstrap/scss/utilities/api";
+
+// ============================================
+// Buttons
+// ============================================
+.btn {
+  font-family: $font-family-base;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: $accent-warm;
+  border-color: $accent-warm;
+  color: $primary;
+  box-shadow: 0 0 0 0 rgba($accent-warm, 0);
+
+  &:hover,
+  &:focus {
+    background-color: color.adjust($accent-warm, $lightness: -8%);
+    border-color: color.adjust($accent-warm, $lightness: -8%);
+    color: $primary;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba($accent-warm, 0.35);
+  }
+}
+
+.btn-outline-dark {
+  border-color: $primary;
+  color: $primary;
+
+  &:hover,
+  &:focus {
+    background-color: $primary;
+    border-color: $primary;
+    color: #ffffff;
+  }
+}
+
+.btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+
+  &:hover,
+  &:focus {
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: $primary;
+  }
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
+.btn-link {
+  color: $primary;
+  text-decoration: none;
+  padding: 0;
+  font-weight: 600;
+
+  &:hover {
+    color: $accent-warm;
+  }
+
+  .arrow {
+    display: inline-block;
+    margin-left: 0.5rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover .arrow {
+    transform: translateX(4px);
+  }
+}
+
+// ============================================
+// Cards (generic)
+// ============================================
+.card {
+  border: 1px solid $subtleGray;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  background: #ffffff;
+
+  &:hover {
+    border-color: $primary;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba($primary, 0.08);
+  }
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1.25rem;
+  color: $accent-warm;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.card-text {
+  color: $secondary;
+  margin-bottom: 1.25rem;
+}
+
+// ============================================
+// Credibility Text
+// ============================================
+.credibility-text {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: $primary;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+}
+
+// Bulleted List styles are in components/list/.ignore/list.scss
+
+// ============================================
+// Feature Blocks
+// ============================================
+.feature-block {
+  padding: 3rem;
+  border-radius: 12px;
+  height: 100%;
+}
+
+.feature-block-alt {
+  background: #ffffff;
+  border: 1px solid $subtleGray;
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1.5rem;
+  color: $accent-warm;
+}
+
+// ============================================
+// Blockquote
+// ============================================
+.blockquote-feature {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $primary;
+  line-height: 1.4;
+  border-left: 4px solid $accent-warm;
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+}
+
+// ============================================
+// Product List
+// ============================================
+.product-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid $subtleGray;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .product-bullet {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $accent-warm;
+    flex-shrink: 0;
+  }
+}
+
+// ============================================
+// Capability List
+// ============================================
+.capability-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  @media (max-width: 767.98px) {
+    grid-template-columns: 1fr;
+  }
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+  }
+
+  .check-icon {
+    width: 20px;
+    height: 20px;
+    color: $accent-warm;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+}
+
+// ============================================
+// Phase Cards
+// ============================================
+.phase-card {
+  background: #ffffff;
+  border: 1px solid $subtleGray;
+  border-radius: 12px;
+  padding: 2rem;
+  height: 100%;
+  position: relative;
+
+  &::before {
+    content: attr(data-phase);
+    position: absolute;
+    top: -0.75rem;
+    left: 2rem;
+    background: $accent-warm;
+    color: $primary;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  h4 {
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  p {
+    color: $secondary;
+    margin-bottom: 0;
+  }
+}
+
+// ============================================
+// Form Styles
+// ============================================
+.form-control,
+.form-select {
+  font-family: $font-family-base;
+  padding: 0.875rem 1rem;
+  border: 1px solid $subtleGray;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: $primary;
+  margin-bottom: 0.5rem;
+}
+
+textarea.form-control {
+  min-height: 150px;
+  resize: vertical;
+}
+
+// ============================================
+// Profile Avatar (About page)
+// ============================================
+.profile-avatar {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, $primary 0%, #1e293b 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.5;
+  }
+}
+
+.profile-avatar-initials {
+  font-family: $font-family-base;
+  font-size: 4rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.15);
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-avatar-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  opacity: 0.25;
+  z-index: 2;
+}
+
+// ============================================
+// Utilities
+// ============================================
+.border-top-accent {
+  border-top: 4px solid $accent-warm !important;
+}
+
+.bg-gradient-subtle {
+  background: linear-gradient(180deg, $subtleWhite 0%, #ffffff 100%);
+}
+
+// ============================================
+// GPU Acceleration for Animated Elements
+// ============================================
+.section-label,
+.section-header h2,
+.subheadline,
+.card-item,
+.stat-item,
+.stats-bar,
+.bulleted-list li,
+.dark-block-list li,
+.numbered-step,
+.phase-card,
+.feature-block,
+.capability-list li,
+.blockquote-feature,
+.cta-block h2,
+.cta-block p,
+.cta-block .btn,
+.product-list li,
+.credibility-text,
+.contact-form-wrapper,
+.contact-info,
+.expect-item,
+.lead {
+  will-change: transform, opacity;
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 991.98px) {
+  .dark-block {
+    padding: 2.5rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .stat-item {
+    margin-bottom: 1.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .dark-block {
+    padding: 2rem;
+  }
+
+  .service-card {
+    padding: 1.75rem;
+  }
+
+  .contact-form-wrapper {
+    padding: 1.5rem !important;
+  }
+
+  .footer {
+    padding: 3rem 0 1.5rem;
+  }
+
+  .phase-card {
+    padding: 1.5rem;
+  }
+
+  .feature-block {
+    padding: 2rem;
+  }
+}
+
+// ============================================
+// Reduced Motion
+// ============================================
+@media (prefers-reduced-motion: reduce) {
+  .section-label,
+  .section-header h2,
+  .subheadline,
+  .card-item,
+  .stat-item,
+  .stats-bar,
+  .bulleted-list li,
+  .dark-block-list li,
+  .numbered-step,
+  .phase-card,
+  .feature-block,
+  .capability-list li,
+  .blockquote-feature,
+  .cta-block h2,
+  .cta-block p,
+  .cta-block .btn,
+  .product-list li,
+  .credibility-text,
+  .contact-form-wrapper,
+  .contact-info,
+  .expect-item,
+  .lead {
+    will-change: auto;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

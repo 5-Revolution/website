@@ -1,0 +1,9 @@
+export default async function initializeHero(e){var t,r;"loaded"!==e.dataset.status&&({createElement:t,markLoaded:r}=await import("../../../scripts/app.js"),buildHero(e,{createElement:t}),r(e,"hero"))}function buildHero(e,{createElement:t}){var o=e.classList.contains("hero-logo"),i=e.children[0];if(i){var i=[...i.children][0],d=i?.querySelector("h1"),i=i?.querySelectorAll("p")||[];let r="",n=null;i.forEach(e=>{var t=e.querySelector("a.btn-primary");t?n=t:e.textContent.trim()&&(r=e.innerHTML)});var i=document.createDocumentFragment(),o=(o&&((o=t("div",["hero-bg-logo"])).innerHTML=`<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(60,60)">
+          <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(0)"/>
+          <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(72)"/>
+          <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(144)"/>
+          <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(216)"/>
+          <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(288)"/>
+        </g>
+      </svg>`,i.appendChild(o),o=t("div",["hero-grid-pattern"]),i.appendChild(o)),t("div",["container"])),a=t("div",["hero-inner"]),l=t("div",["row"]),f=t("div",["col-lg-10"]),s=t("div",["hero-content"]);for(d&&(d.classList.add("display-headline"),s.appendChild(d)),r&&((d=t("p",["subheadline"])).innerHTML=r,s.appendChild(d)),n&&(n.classList.add("btn-lg"),s.appendChild(n)),f.appendChild(s),l.appendChild(f),a.appendChild(l),o.appendChild(a),i.appendChild(o);e.firstChild;)e.removeChild(e.firstChild);e.appendChild(i)}}

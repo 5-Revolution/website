@@ -1,0 +1,411 @@
+// ============================================
+// 5th Revolution — Critical CSS (main.scss)
+// Loaded in <head>, blocks rendering
+// ============================================
+
+@import "./variables";
+
+// Bootstrap critical modules only
+@import "../../node_modules/bootstrap/scss/root";
+@import "../../node_modules/bootstrap/scss/reboot";
+@import "../../node_modules/bootstrap/scss/type";
+@import "../../node_modules/bootstrap/scss/containers";
+@import "../../node_modules/bootstrap/scss/grid";
+
+// ============================================
+// Font Declarations
+// ============================================
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+// ============================================
+// Base Styles
+// ============================================
+body {
+  font-family: $font-family-base;
+  font-weight: 400;
+  color: $primary;
+  background-color: $subtleWhite;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ============================================
+// Typography
+// ============================================
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: $headings-font-family;
+  font-weight: $headings-font-weight;
+  color: $primary;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h1, .h1 {
+  font-weight: 900;
+  font-size: clamp(2.5rem, 5vw, $h1-font-size);
+  letter-spacing: -0.03em;
+}
+
+h2, .h2 {
+  font-size: clamp(2rem, 4vw, $h2-font-size);
+}
+
+h3, .h3 {
+  font-size: clamp(1.5rem, 3vw, $h3-font-size);
+}
+
+h4, .h4 {
+  font-size: 1.25rem;
+}
+
+.display-headline {
+  font-weight: 900;
+  font-size: clamp(3rem, 6vw, 5rem);
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+.subheadline {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: $secondary;
+}
+
+.lead {
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+// ============================================
+// Component Visibility (layout shift prevention)
+// ============================================
+body {
+  .component {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease;
+  }
+
+  .component[data-status=loaded] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+// Default content waits for preceding component
+.component:not([data-status=loaded]) ~ .default-wrapper {
+  display: none;
+}
+
+// ============================================
+// Background Color Utilities
+// ============================================
+@each $color, $value in $theme-colors {
+  .bg-#{$color} {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-#{$color}-rgb), var(--bs-bg-opacity)) !important;
+  }
+}
+
+// ============================================
+// Section Spacing
+// ============================================
+section {
+  padding-top: $section-spacing-sm;
+  padding-bottom: $section-spacing-sm;
+
+  &.max-w-800 .default-wrapper {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (min-width: 768px) {
+    padding-top: $section-spacing-md;
+    padding-bottom: $section-spacing-md;
+  }
+
+  @media (min-width: 1200px) {
+    padding-top: $section-spacing-lg;
+    padding-bottom: $section-spacing-lg;
+  }
+}
+
+// ============================================
+// Section Dark
+// ============================================
+.section-dark {
+  background-color: $primary;
+  color: #ffffff;
+
+  .default-wrapper {
+    h1, h2, h3, h4, h5, h6 { color: #ffffff; }
+    p { color: rgba(255, 255, 255, 0.85); }
+    .subheadline { color: rgba(255, 255, 255, 0.7); }
+  }
+}
+
+// ============================================
+// Section Alt
+// ============================================
+.section-alt {
+  background-color: #ffffff;
+  border-top: 1px solid rgba($subtleGray, 0.6);
+  border-bottom: 1px solid rgba($subtleGray, 0.6);
+}
+
+// Hero styles are in components/hero/.ignore/hero.scss (loaded eagerly via data-priority="critical")
+
+// ============================================
+// Hero Page (Interior Pages)
+// ============================================
+.hero-page {
+  padding-top: 8rem;
+  padding-bottom: 5rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 0%, transparent 60%);
+    -webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 0%, transparent 60%);
+  }
+
+  > .container,
+  > .default-wrapper {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// ============================================
+// CTA Block
+// ============================================
+.cta-block {
+  background: $primary;
+  color: #ffffff;
+  padding: $section-spacing-md 0;
+  text-align: center;
+
+  .default-wrapper {
+    h2 {
+      color: #ffffff;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+// ============================================
+// Section Header + Accent Bar
+// ============================================
+.section-header {
+  max-width: 720px;
+  margin-bottom: 3rem;
+
+  &.text-center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  h2 {
+    position: relative;
+    display: inline-block;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: $accent-warm;
+      border-radius: 2px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  &.text-center h2::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.in-view h2::after {
+    width: 3rem;
+  }
+}
+
+// ============================================
+// Section Label
+// ============================================
+.section-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $accent-warm;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+// ============================================
+// Scroll Animations
+// ============================================
+$animation-duration: 0.6s;
+$animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
+
+.animate-reveal {
+  opacity: 0 !important;
+  transform: translateY(24px) !important;
+  transition-property: opacity, transform !important;
+  transition-duration: $animation-duration !important;
+  transition-timing-function: $animation-easing !important;
+
+  &.is-visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+}
+
+// ============================================
+// Scroll Animation Initial States (CSS)
+// Elements start hidden — GSAP animates them in.
+// Prevents flash: content won't show then hide
+// when GSAP loads after initial render.
+// ============================================
+.section-label:not(.hero-page .section-label),
+.section-header h2,
+.section-header .subheadline,
+.card-item,
+.stat-item,
+.bulleted-list li,
+.dark-block-list li,
+.numbered-step,
+.phase-card,
+.feature-block,
+.capability-list li,
+.blockquote-feature,
+.cta-block h2,
+.cta-block p,
+.cta-block .btn,
+.product-list li,
+.expect-item,
+.contact-form-wrapper,
+.contact-info {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.stats-bar {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.credibility-text,
+.lead:not(.hero-content .subheadline) {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+// ============================================
+// Lenis Smooth Scroll
+// ============================================
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+// ============================================
+// Reduced Motion
+// ============================================
+@media (prefers-reduced-motion: reduce) {
+  .animate-reveal,
+  .section-label,
+  .section-header h2,
+  .section-header .subheadline,
+  .card-item,
+  .stat-item,
+  .stats-bar,
+  .bulleted-list li,
+  .dark-block-list li,
+  .numbered-step,
+  .phase-card,
+  .feature-block,
+  .capability-list li,
+  .blockquote-feature,
+  .cta-block h2,
+  .cta-block p,
+  .cta-block .btn,
+  .product-list li,
+  .expect-item,
+  .contact-form-wrapper,
+  .contact-info,
+  .credibility-text,
+  .lead {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

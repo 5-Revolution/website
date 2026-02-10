@@ -1,0 +1,9 @@
+export default async function initializeFooterBrand(e){var t,r;"loaded"!==e.dataset.status&&({createElement:t,markLoaded:r}=await import("../../../scripts/app.js"),buildFooterBrand(e,{createElement:t}),r(e,"footer-brand"))}function buildFooterBrand(e,{createElement:t}){var r=e.closest("footer");r&&r.classList.add("footer");var r=e.children[0]?.querySelector(":scope > div"),o=r?.querySelector("a"),r=r?.querySelectorAll("p")||[],n=o?.getAttribute("href")||"/",o=o?.textContent.trim()||"";let a="";r.forEach(e=>{!e.querySelector("a")&&e.textContent.trim()&&(a=e.innerHTML)});var r=parseColClass(e),i=t("div",["container"]),f=t("div",["row","g-4","footer-row"]),r=t("div",[r]),n=t("a",["footer-brand-link"],{href:n});for(n.innerHTML=`<svg class="logo-mark" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(60,60)">
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(0)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(72)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(144)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(216)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(288)"/>
+      </g>
+    </svg>`,o&&(o=document.createTextNode(" "+o),n.appendChild(o)),r.appendChild(n),a&&((o=t("p",["footer-description"])).innerHTML=a,r.appendChild(o)),f.appendChild(r),i.appendChild(f);e.firstChild;)e.removeChild(e.firstChild);e.appendChild(i)}function parseColClass(e){for(var t of e.classList){t=t.match(/^(sm|md|lg|xl|xxl)-(\d+)$/);if(t)return`col-${t[1]}-`+t[2]}return"col-lg-4"}

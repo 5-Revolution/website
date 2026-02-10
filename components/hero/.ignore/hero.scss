@@ -1,0 +1,131 @@
+@import "../../../styles/.ignore/variables";
+
+// ============================================
+// Hero Component
+// ============================================
+.component.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+// Remove section padding when it contains a hero
+section:has(.component.hero) {
+  padding: 0;
+}
+
+// ============================================
+// Hero Inner
+// ============================================
+.hero-inner {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  padding-top: 5rem;
+  padding-bottom: 3rem;
+}
+
+.hero-content {
+  max-width: 720px;
+
+  .display-headline {
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+  }
+
+  .subheadline {
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+// ============================================
+// Hero Background Logo (Continuous Rotation)
+// ============================================
+.hero-bg-logo {
+  position: absolute;
+  right: -15%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 90vh;
+  height: 90vh;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    animation: continuousRotate 30s linear infinite;
+  }
+}
+
+@keyframes continuousRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// ============================================
+// Hero Grid Pattern
+// ============================================
+.hero-grid-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 70%);
+}
+
+.component.hero > .container {
+  position: relative;
+  z-index: 1;
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 991.98px) {
+  .component.hero {
+    min-height: auto;
+    padding-top: 6rem;
+  }
+
+  .hero-inner {
+    min-height: auto;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .hero-bg-logo {
+    right: -30%;
+    width: 70vh;
+    height: 70vh;
+    opacity: 0.04;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .hero-bg-logo {
+    right: -40%;
+    width: 60vh;
+    height: 60vh;
+    opacity: 0.03;
+  }
+}
+
+// ============================================
+// Reduced Motion
+// ============================================
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg-logo svg {
+    animation: none;
+  }
+}

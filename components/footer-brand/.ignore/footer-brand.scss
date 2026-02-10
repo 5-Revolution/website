@@ -1,0 +1,54 @@
+@import "../../../styles/.ignore/variables";
+
+// ============================================
+// Footer Container (on <footer> element)
+// Applied by footer-brand JS via closest('footer')
+// Uses Bootstrap container + row classes added by JS
+// ============================================
+.footer {
+  background: $primary;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 4rem 0 2rem;
+}
+
+// ============================================
+// Footer Brand Link
+// ============================================
+.footer-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #ffffff;
+  text-decoration: none;
+  margin-bottom: 1rem;
+
+  &:hover {
+    color: #ffffff;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+}
+
+// ============================================
+// Footer Description
+// ============================================
+.footer-description {
+  font-size: 0.9375rem;
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 575.98px) {
+  .footer {
+    padding: 3rem 0 1.5rem;
+  }
+}

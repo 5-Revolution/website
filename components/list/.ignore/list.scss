@@ -1,0 +1,219 @@
+@import "../../../styles/.ignore/variables";
+
+// ============================================
+// Bulleted List (labeled bullets centered)
+// ============================================
+.bulleted-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid $subtleGray;
+    font-size: 1.125rem;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $accent-warm;
+      flex-shrink: 0;
+      margin-top: 0.6em;
+    }
+  }
+}
+
+// ============================================
+// Dark Block (card-dark two-col)
+// ============================================
+.dark-block {
+  background: linear-gradient(135deg, $primary 0%, #1e293b 100%);
+  border-radius: 16px;
+  padding: 4rem;
+  color: #ffffff;
+
+  h2 {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+  }
+
+  .lead {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.dark-block-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $accent-warm;
+      flex-shrink: 0;
+      margin-top: 0.6em;
+    }
+  }
+}
+
+@media (max-width: 991.98px) {
+  .dark-block {
+    padding: 2.5rem 2rem;
+  }
+}
+
+// ============================================
+// Numbered Grid (labeled numbered horizontal)
+// ============================================
+.numbered-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 991.98px) {
+  .numbered-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.numbered-step {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2rem;
+    right: -1rem;
+    width: calc(2rem);
+    height: 2px;
+    background: $subtleGray;
+  }
+
+  &:last-child::after {
+    display: none;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .numbered-step::after {
+    display: none;
+  }
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: $primary;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-bottom: 1.25rem;
+}
+
+.step-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.step-text {
+  color: $secondary;
+  font-size: 0.9375rem;
+}
+
+// ============================================
+// Stat Bar (card-transparent four-col center)
+// ============================================
+.stats-bar {
+  background: #ffffff;
+  border: 1px solid $subtleGray;
+  border-radius: 12px;
+  padding: 2.5rem 3rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: $primary;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 991.98px) {
+  .stats-bar {
+    padding: 2rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .stat-item {
+    margin-bottom: 1.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .stats-bar {
+    padding: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+}

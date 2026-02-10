@@ -18,23 +18,11 @@ node_modules/
 .env.*.local
 
 # ============================================
-# NimbusEdge CMS — Compiled Build Artifacts
+# NimbusEdge CMS — Build Artifacts
 # ============================================
 # Gulp compiles .ignore/ sources → parent directory.
-# Track source files in .ignore/, exclude compiled output.
-
-# Compiled scripts (built from scripts/.ignore/)
-scripts/app.js
-scripts/core.js
-scripts/bootstrap.js
-
-# Compiled styles (built from styles/.ignore/)
-styles/main.css
-styles/lazy.css
-
-# Compiled component assets (built from components/{name}/.ignore/)
-components/*/*.js
-components/*/*.css
+# Both source (.ignore/) and compiled output are tracked
+# since the repo is served directly.
 
 # NimbusEdge local server artifacts
 .nimbusedge/

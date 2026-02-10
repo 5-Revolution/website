@@ -1,0 +1,53 @@
+// ============================================
+// 5th Revolution — Theme Variables
+// Bootstrap SCSS overrides + brand tokens
+// ============================================
+
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+// ============================================
+// Brand Colors
+// ============================================
+$primary:       #0f172a;  // Slate — primary brand color
+$secondary:     #64748b;  // Muted — secondary text, subtle elements
+$accent-warm:   #f59e0b;  // Amber — CTAs, highlights (use sparingly)
+$darkBlue:      #0f172a;  // Slate — dark backgrounds
+$subtleWhite:   #fafafa;  // Off-White — page backgrounds
+$subtleGray:    #e2e8f0;  // Light Gray — borders, dividers
+
+// ============================================
+// Typography
+// ============================================
+$font-family-base: "Satoshi", -apple-system, BlinkMacSystemFont, sans-serif;
+$headings-font-family: "Satoshi", -apple-system, BlinkMacSystemFont, sans-serif;
+$headings-font-weight: 700;
+$font-size-base: 1.125rem;  // 18px
+
+// Heading Scale (matches mockup maximums)
+$h1-font-size: 4rem;     // 64px max (clamp in main.scss)
+$h2-font-size: 3rem;     // 48px max
+$h3-font-size: 2rem;     // 32px max
+
+// ============================================
+// Section Spacing
+// ============================================
+$section-spacing-sm: 3rem;   // Mobile
+$section-spacing-md: 5rem;   // Tablet
+$section-spacing-lg: 7rem;   // Desktop
+
+// ============================================
+// Custom Color Map
+// ============================================
+$custom-colors: (
+  "offwhite": $subtleWhite,
+  "offgray": $subtleGray,
+  "darkblue": $darkBlue,
+  "amber": $accent-warm
+);
+
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+@import "../../node_modules/bootstrap/scss/maps";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/utilities";
