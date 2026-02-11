@@ -160,8 +160,8 @@ function renderForm(component, formData, { createElement, colClass, headingConte
 // ============================================
 
 function addFormField(field, fieldGrid, { createElement }) {
-  const colClass = field.halfWidth ? 'col-md-6' : 'col-12';
-  const fieldCol = createElement('div', [colClass]);
+  const colClasses = field.style ? field.style.split(' ').filter(Boolean) : ['col-12'];
+  const fieldCol = createElement('div', colClasses);
   const fieldGroup = createElement('div', ['mb-0']);
 
   // Label (skip for checkbox/radio)
@@ -382,7 +382,7 @@ function addSubmitButton(field, fieldGrid, form, { createElement }) {
   });
 
   const button = createElement('button', buttonClasses, { type: 'submit', id: field.name });
-  button.textContent = field.label || 'Submit';
+  button.textContent = field.label || field.placeholder || 'Submit';
 
   if (field.action) {
     form.setAttribute('data-action', field.action);
