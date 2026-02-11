@@ -467,6 +467,10 @@ function setNavbarFinalState() {
   if (brandText) {
     brandText.classList.add('visible', 'revealed-instant');
   }
+
+  // Show mobile toggler immediately on return visits
+  const toggler = navbarBrand.closest('.navbar')?.querySelector('.navbar-toggler');
+  if (toggler) toggler.classList.add('visible');
 }
 
 function playNavbarAnimation() {
@@ -580,6 +584,17 @@ function playNavbarAnimation() {
     duration: 0.8,
     ease: 'power2.out',
   }, allDoneTime + 2.8);
+
+  // Fade in mobile toggler after brand animation completes
+  const toggler = navbarBrand.closest('.navbar')?.querySelector('.navbar-toggler');
+  if (toggler) {
+    tl.to(toggler, {
+      opacity: 1,
+      duration: 0.4,
+      ease: 'power2.out',
+      onComplete() { toggler.classList.add('visible'); },
+    }, allDoneTime + 3.2);
+  }
 
   tl.play();
 }

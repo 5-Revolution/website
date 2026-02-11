@@ -121,6 +121,20 @@
 }
 
 // ============================================
+// Mobile Toggler — Hidden Until Brand Animation Completes
+// ============================================
+.navbar-toggler {
+  opacity: 0;
+  pointer-events: none;
+  transition: none; // GSAP handles the fade-in
+
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+// ============================================
 // Nav Links
 // ============================================
 .navbar-nav {
