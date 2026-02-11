@@ -10,6 +10,7 @@
  *   .6, .md-6, .lg-3 — Column widths (col-6, col-md-6, col-lg-3). Multiple supported.
  *   .aligned-left  — Left-aligned text (default)
  *   .aligned-center — Center-aligned text
+ *   .listed        — Cards include a bulleted list (gold dots) below description
  *   .cta           — Cards with links are fully clickable (stretched link)
  *   .cta-arrow     — Same as .cta + arrow decoration on links
  */
@@ -26,6 +27,7 @@ export default async function initializeCards(component) {
 function buildCards(component, { createElement }) {
   const isNumbered = component.classList.contains('numbered');
   const isPhased = component.classList.contains('phased');
+  const isListed = component.classList.contains('listed');
   const hasCtaArrow = component.classList.contains('cta-arrow');
 
   // Determine column classes from component classes (supports multiple: 6 md-6 lg-3)
@@ -87,6 +89,15 @@ function buildCards(component, { createElement }) {
       const text = createElement('p', ['card-text']);
       text.innerHTML = description;
       card.appendChild(text);
+    }
+
+    // Bulleted list (listed variant)
+    if (isListed) {
+      const ul = col.querySelector('ul');
+      if (ul) {
+        ul.classList.add('card-list');
+        card.appendChild(ul);
+      }
     }
 
     if (ctaLink) {
