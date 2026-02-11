@@ -190,8 +190,6 @@ section {
 // Labeled Default Wrapper (blockquote/promise sections)
 // ============================================
 section.labeled .default-wrapper {
-  text-align: center;
-  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
 
@@ -306,6 +304,29 @@ section.labeled .default-wrapper {
   }
 }
 
+// Default-wrapper labeled pattern: <p><em>label</em></p> followed by <h2>
+// Applies same accent bar as .section-header h2
+.default-wrapper > p:has(> em) + h2 {
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: $accent-warm;
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.default-wrapper.in-view > p:has(> em) + h2::after {
+  width: 3rem;
+}
+
 // ============================================
 // Section Label
 // ============================================
@@ -346,6 +367,8 @@ $animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
 .section-label:not(.hero-page .section-label),
 .section-header h2,
 .section-header .subheadline,
+.default-wrapper > p:has(> em),
+.default-wrapper > p:has(> em) + h2,
 .card-item,
 .stat-item,
 .bulleted-list li,

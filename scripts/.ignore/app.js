@@ -147,6 +147,7 @@ class SiteScrollAnimations {
     if (typeof gsap === 'undefined') return;
 
     this.animateSectionHeaders();
+    this.animateLabeledDefaults();
     this.animateCardItems();
     this.animateStats();
     this.animateBulletedLists();
@@ -183,6 +184,25 @@ class SiteScrollAnimations {
       if (sub) {
         tl.to(sub, { opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease }, label ? 0.2 : 0.1);
       }
+    });
+  }
+
+  animateLabeledDefaults() {
+    document.querySelectorAll('.default-wrapper > p:has(> em) + h2').forEach((h2) => {
+      const wrapper = h2.closest('.default-wrapper');
+      if (!wrapper || wrapper.dataset.gsapAnimated) return;
+      wrapper.dataset.gsapAnimated = '1';
+
+      const label = h2.previousElementSibling;
+      const tl = this.timelineOnScroll(wrapper);
+
+      if (label) {
+        tl.to(label, { opacity: 1, y: 0, duration: this.config.duration.fast, ease: this.config.ease }, 0);
+      }
+      tl.to(h2, {
+        opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease,
+        onStart: () => wrapper.classList.add('in-view'),
+      }, 0.1);
     });
   }
 
