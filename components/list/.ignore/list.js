@@ -27,11 +27,11 @@ export default async function initializeList(component) {
 
   const { createElement, markLoaded } = await import('../../../scripts/app.js');
 
-  buildList(component, { createElement });
+  await buildList(component, { createElement });
   markLoaded(component, 'list');
 }
 
-function buildList(component, { createElement }) {
+async function buildList(component, { createElement }) {
   const isBullets = component.classList.contains('bullets');
   const isCardDark = component.classList.contains('card-dark');
   const isTwoCol = component.classList.contains('two-col');
@@ -53,6 +53,9 @@ function buildList(component, { createElement }) {
   } else if (isCardDark && isTwoCol) {
     const isLabeled = component.classList.contains('labeled');
     buildDarkBlock(component, fragment, { createElement, isLabeled });
+  } else if (isCardDark) {
+    const isChecked = component.classList.contains('checked');
+    await buildDarkCard(component, fragment, { createElement, isChecked });
   } else if (isTwoCol) {
     const isLabeled = component.classList.contains('labeled');
     const isChecked = component.classList.contains('checked');
@@ -142,6 +145,133 @@ function buildDarkBlock(component, fragment, { createElement, isLabeled }) {
   block.appendChild(row);
   container.appendChild(block);
   fragment.appendChild(container);
+}
+
+// ============================================
+// Variant: Dark Card (card-dark, single column)
+// Single CMS row: heading + description + checked list + contact details
+// ============================================
+async function buildDarkCard(component, fragment, { createElement, isChecked }) {
+  const cmsCol = component.querySelector(':scope > div > div');
+  if (!cmsCol) return;
+
+  const shouldAppend = component.classList.contains('append');
+  const block = createElement('div', ['dark-block']);
+
+  // Move ALL children from CMS col into the dark block
+  while (cmsCol.firstChild) block.appendChild(cmsCol.firstChild);
+
+  // Add classes to known elements
+  const heading = block.querySelector('h3') || block.querySelector('h2');
+  if (heading) heading.classList.add('dark-block-heading');
+
+  // Description paragraphs (between heading and ul) get lead class
+  if (heading) {
+    let sibling = heading.nextElementSibling;
+    while (sibling && sibling.tagName !== 'UL') {
+      if (sibling.tagName === 'P' && !sibling.querySelector('.icon')) {
+        sibling.classList.add('lead');
+      }
+      sibling = sibling.nextElementSibling;
+    }
+  }
+
+  // Transform the checked list
+  const ul = block.querySelector('ul');
+  if (ul && isChecked) {
+    ul.classList.add('capability-list');
+    ul.querySelectorAll(':scope > li').forEach((li) => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'check-icon');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linejoin', 'round');
+      svg.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+
+      const span = createElement('span');
+      span.innerHTML = li.innerHTML;
+      li.innerHTML = '';
+      li.appendChild(svg);
+      li.appendChild(span);
+    });
+  } else if (ul) {
+    ul.classList.add('dark-block-list');
+  }
+
+  // Transform icon paragraphs (after ul) into contact-detail rows
+  // CMS pattern: <p><span class="icon icon-*"><img/></span> <strong>Label</strong> <a>value</a></p>
+  const iconParagraphs = block.querySelectorAll('p:has(.icon)');
+  if (iconParagraphs.length) {
+    const hr = createElement('hr', ['dark-block-divider']);
+    // Insert hr before the first icon paragraph
+    iconParagraphs[0].before(hr);
+
+    iconParagraphs.forEach((p) => {
+      p.classList.add('contact-detail');
+
+      // Wrap strong + link in a content div (icon left, text stacked right)
+      const iconSpan = p.querySelector('.icon');
+      const strong = p.querySelector('strong');
+      const link = p.querySelector('a');
+
+      if (link) {
+        link.classList.remove('btn', 'btn-link', 'btn-primary');
+        if (!link.classList.length) link.removeAttribute('class');
+      }
+
+      const content = createElement('div', ['contact-detail-content']);
+      if (strong) content.appendChild(strong);
+      if (link) content.appendChild(link);
+
+      // Clear paragraph, re-add icon + content wrapper
+      p.textContent = '';
+      if (iconSpan) p.appendChild(iconSpan);
+      p.appendChild(content);
+    });
+  }
+
+  if (shouldAppend) {
+    const targetRow = await waitForAppendTarget(component);
+    if (targetRow) {
+      const col = createElement('div', ['col-lg-5']);
+      col.appendChild(block);
+      targetRow.appendChild(col);
+      component.remove();
+      return;
+    }
+  }
+
+  // Fallback: self-contained
+  const container = createElement('div', ['container']);
+  container.appendChild(block);
+  fragment.appendChild(container);
+}
+
+/** Walk backward to find the nearest component, wait for it to load, return its .row */
+function waitForAppendTarget(component) {
+  let sibling = component.previousElementSibling;
+  while (sibling) {
+    if (sibling.classList.contains('component')) {
+      // If already loaded, return row immediately
+      if (sibling.dataset.status === 'loaded') {
+        return sibling.querySelector('.row');
+      }
+      // Wait for sibling to finish loading
+      return new Promise((resolve) => {
+        const observer = new MutationObserver(() => {
+          if (sibling.dataset.status === 'loaded') {
+            observer.disconnect();
+            resolve(sibling.querySelector('.row'));
+          }
+        });
+        observer.observe(sibling, { attributes: true, attributeFilter: ['data-status'] });
+      });
+    }
+    sibling = sibling.previousElementSibling;
+  }
+  return Promise.resolve(null);
 }
 
 // ============================================

@@ -54,17 +54,19 @@ function buildFooterBrand(component, { createElement }) {
   // Transform existing <a> into footer-brand-link with SVG logo
   const cmsLink = brandCol.querySelector('a');
   if (cmsLink) {
+    // Strip CMS utility classes before adding footer-brand-link
+    cmsLink.classList.remove('btn', 'btn-link', 'btn-primary');
     cmsLink.classList.add('footer-brand-link');
 
     // Wrap text content in a text node after SVG
     const brandText = cmsLink.textContent.trim();
     cmsLink.innerHTML = `<svg class="logo-mark" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g transform="translate(60,60)">
-        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(0)"/>
-        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(72)"/>
-        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(144)"/>
-        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(216)"/>
-        <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(288)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="currentColor" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(0)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="currentColor" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(72)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="currentColor" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(144)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="currentColor" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(216)"/>
+        <path d="M-9,-42 L0,-16 L9,-42" stroke="currentColor" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(288)"/>
       </g>
     </svg>`;
     if (brandText) {
