@@ -33,23 +33,10 @@ function buildFooterBrand(component, { createElement }) {
     footerEl.classList.add('footer');
   }
 
-  // Extract content from CMS structure
-  const row = component.children[0];
-  const col = row?.querySelector(':scope > div');
-
-  const cmsLink = col?.querySelector('a');
-  const paragraphs = col?.querySelectorAll('p') || [];
-
-  const brandHref = cmsLink?.getAttribute('href') || '/';
-  const brandText = cmsLink?.textContent.trim() || '';
-
-  // Description is the paragraph without a link
-  let descriptionHTML = '';
-  paragraphs.forEach((p) => {
-    if (!p.querySelector('a') && p.textContent.trim()) {
-      descriptionHTML = p.innerHTML;
-    }
-  });
+  // Get CMS content container
+  const cmsRow = component.children[0];
+  const cmsCol = cmsRow?.querySelector(':scope > div');
+  if (!cmsCol) return;
 
   // Determine column class from component CMS classes (e.g., lg-4 -> col-lg-4)
   const colClass = parseColClass(component);
@@ -61,9 +48,17 @@ function buildFooterBrand(component, { createElement }) {
   // Brand column
   const brandCol = createElement('div', [colClass]);
 
-  // Brand link with SVG logo (hardcoded — too complex for CMS authoring)
-  const brandLink = createElement('a', ['footer-brand-link'], { href: brandHref });
-  brandLink.innerHTML = `<svg class="logo-mark" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  // Move ALL children from CMS col into brand column
+  while (cmsCol.firstChild) brandCol.appendChild(cmsCol.firstChild);
+
+  // Transform existing <a> into footer-brand-link with SVG logo
+  const cmsLink = brandCol.querySelector('a');
+  if (cmsLink) {
+    cmsLink.classList.add('footer-brand-link');
+
+    // Wrap text content in a text node after SVG
+    const brandText = cmsLink.textContent.trim();
+    cmsLink.innerHTML = `<svg class="logo-mark" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g transform="translate(60,60)">
         <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(0)"/>
         <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(72)"/>
@@ -72,17 +67,22 @@ function buildFooterBrand(component, { createElement }) {
         <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(288)"/>
       </g>
     </svg>`;
+    if (brandText) {
+      cmsLink.appendChild(document.createTextNode(' ' + brandText));
+    }
 
-  if (brandText) {
-    const textNode = document.createTextNode(' ' + brandText);
-    brandLink.appendChild(textNode);
+    // Extract link from wrapper <p> if needed
+    const parentP = cmsLink.parentElement;
+    if (parentP && parentP.tagName === 'P') {
+      parentP.replaceWith(cmsLink);
+    }
   }
-  brandCol.appendChild(brandLink);
 
-  if (descriptionHTML) {
-    const desc = createElement('p', ['footer-description']);
-    desc.innerHTML = descriptionHTML;
-    brandCol.appendChild(desc);
+  // Add class to description paragraph (p without a link)
+  for (const p of brandCol.querySelectorAll(':scope > p')) {
+    if (!p.querySelector('a')) {
+      p.classList.add('footer-description');
+    }
   }
 
   gridRow.appendChild(brandCol);

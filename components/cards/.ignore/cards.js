@@ -27,7 +27,6 @@ export default async function initializeCards(component) {
 function buildCards(component, { createElement }) {
   const isNumbered = component.classList.contains('numbered');
   const isPhased = component.classList.contains('phased');
-  const isListed = component.classList.contains('listed');
   const hasCtaArrow = component.classList.contains('cta-arrow');
 
   // Determine column classes from component classes (supports multiple: 6 md-6 lg-3)
@@ -36,17 +35,13 @@ function buildCards(component, { createElement }) {
     .map((c) => `col-${c}`);
   if (!colClasses.length) colClasses.push('col-md-6');
 
-  const rows = [...component.children];
-  const fragment = document.createDocumentFragment();
+  const cmsRows = [...component.children];
   const container = createElement('div', ['container']);
   const gridRow = createElement('div', ['row', 'g-4']);
 
-  rows.forEach((rowDiv, index) => {
-    const col = rowDiv.querySelector(':scope > div');
-    if (!col) return;
-
-    const h3 = col.querySelector('h3');
-    const paragraphs = col.querySelectorAll(':scope > p');
+  cmsRows.forEach((rowDiv, index) => {
+    const cmsCol = rowDiv.querySelector(':scope > div');
+    if (!cmsCol) return;
 
     const gridCol = createElement('div', colClasses);
     const cardClass = isPhased ? 'phase-card' : 'card-item';
@@ -57,55 +52,46 @@ function buildCards(component, { createElement }) {
       card.dataset.phase = `Phase ${index + 1}`;
     }
 
-    // Auto-number badge
+    // Auto-number badge (prepended before content)
     if (isNumbered) {
       const num = createElement('div', ['card-number']);
       num.textContent = String(index + 1).padStart(2, '0');
       card.appendChild(num);
     }
 
-    // Title
+    // Move ALL children from CMS col into card (preserves order + unknown elements)
+    while (cmsCol.firstChild) card.appendChild(cmsCol.firstChild);
+
+    // Add classes to known elements (now inside the card)
+    const h3 = card.querySelector('h3');
     if (h3) {
-      const titleTag = isPhased ? 'h4' : 'h3';
-      const title = createElement(titleTag, ['card-title']);
-      title.innerHTML = h3.innerHTML;
-      card.appendChild(title);
+      h3.classList.add('card-title');
+      // Phased variant uses h4 styling via card-title class; keep the h3 element
     }
 
-    // Description and CTA link
-    let description = null;
-    let ctaLink = null;
-
-    paragraphs.forEach((p) => {
-      const link = p.querySelector('a');
-      if (link) {
-        ctaLink = link;
-      } else if (p.textContent.trim()) {
-        description = p.innerHTML;
-      }
-    });
-
-    if (description) {
-      const text = createElement('p', ['card-text']);
-      text.innerHTML = description;
-      card.appendChild(text);
-    }
-
-    // Bulleted list (listed variant)
-    if (isListed) {
-      const ul = col.querySelector('ul');
-      if (ul) {
-        ul.classList.add('card-list');
-        card.appendChild(ul);
+    // Paragraphs without links get card-text; skip p wrapping a link
+    for (const p of card.querySelectorAll(':scope > p')) {
+      if (!p.querySelector('a')) {
+        p.classList.add('card-text');
       }
     }
 
+    // List (listed variant)
+    const ul = card.querySelector(':scope > ul');
+    if (ul) ul.classList.add('card-list');
+
+    // CTA link
+    const ctaLink = card.querySelector(':scope > p > a, :scope > a');
     if (ctaLink) {
       if (hasCtaArrow) {
         ctaLink.innerHTML = ctaLink.textContent.trim() + ' <span class="arrow">&rarr;</span>';
       }
       ctaLink.classList.add('card-link');
-      card.appendChild(ctaLink);
+      // Extract link from wrapper <p> if needed
+      const parentP = ctaLink.parentElement;
+      if (parentP && parentP.tagName === 'P') {
+        parentP.replaceWith(ctaLink);
+      }
     }
 
     gridCol.appendChild(card);
@@ -113,8 +99,7 @@ function buildCards(component, { createElement }) {
   });
 
   container.appendChild(gridRow);
-  fragment.appendChild(container);
 
   while (component.firstChild) component.removeChild(component.firstChild);
-  component.appendChild(fragment);
+  component.appendChild(container);
 }

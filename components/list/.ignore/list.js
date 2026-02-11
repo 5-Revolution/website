@@ -49,9 +49,7 @@ function buildList(component, { createElement }) {
   const fragment = document.createDocumentFragment();
 
   if (isCardTransparent) {
-    const col = component.querySelector(':scope > div > div');
-    const ul = col?.querySelector('ul');
-    buildStatBar(fragment, { createElement, ul });
+    buildStatBar(component, fragment, { createElement });
   } else if (isCardDark && isTwoCol) {
     const isLabeled = component.classList.contains('labeled');
     buildDarkBlock(component, fragment, { createElement, isLabeled });
@@ -61,13 +59,9 @@ function buildList(component, { createElement }) {
     const isOneList = component.classList.contains('one-list');
     buildTwoColList(component, fragment, { createElement, isLabeled, isChecked, isOneList });
   } else if (isNumbered) {
-    const col = component.querySelector(':scope > div > div');
-    const ul = col?.querySelector('ul');
-    buildNumberedGrid(fragment, { createElement, ul, gridCols });
+    buildNumberedGrid(component, fragment, { createElement, gridCols });
   } else if (isBullets) {
-    const col = component.querySelector(':scope > div > div');
-    const ul = col?.querySelector('ul');
-    buildBulletedList(fragment, { createElement, ul, colClass });
+    buildBulletedList(component, fragment, { createElement, colClass });
   }
 
   while (component.firstChild) component.removeChild(component.firstChild);
@@ -77,15 +71,20 @@ function buildList(component, { createElement }) {
 // ============================================
 // Variant: Bulleted List (bullets lg-8)
 // ============================================
-function buildBulletedList(fragment, { createElement, ul, colClass }) {
+function buildBulletedList(component, fragment, { createElement, colClass }) {
+  const cmsCol = component.querySelector(':scope > div > div');
+  if (!cmsCol) return;
+
   const container = createElement('div', ['container']);
   const row = createElement('div', ['row', 'justify-content-center']);
   const col = createElement('div', [colClass || 'col-lg-8']);
 
-  if (ul) {
-    ul.classList.add('bulleted-list');
-    col.appendChild(ul);
-  }
+  // Move ALL children from CMS col (preserves ul + any other content)
+  while (cmsCol.firstChild) col.appendChild(cmsCol.firstChild);
+
+  // Add class to the ul
+  const ul = col.querySelector('ul');
+  if (ul) ul.classList.add('bulleted-list');
 
   row.appendChild(col);
   container.appendChild(row);
@@ -97,48 +96,46 @@ function buildBulletedList(fragment, { createElement, ul, colClass }) {
 // Two CMS rows: Row 1 = heading content, Row 2 = list
 // ============================================
 function buildDarkBlock(component, fragment, { createElement, isLabeled }) {
-  const rows = [...component.children];
-  const row1Col = rows[0]?.querySelector(':scope > div');
-  const row2Col = rows[1]?.querySelector(':scope > div');
-
-  const h2 = row1Col?.querySelector('h2');
-  const paragraphs = row1Col ? [...row1Col.querySelectorAll(':scope > p')] : [];
-  const ul = row2Col?.querySelector('ul');
+  const cmsRows = [...component.children];
+  const row1Col = cmsRows[0]?.querySelector(':scope > div');
+  const row2Col = cmsRows[1]?.querySelector(':scope > div');
 
   const container = createElement('div', ['container']);
   const block = createElement('div', ['dark-block']);
   const row = createElement('div', ['row', 'align-items-center']);
 
-  // Left column: heading + label/lead
+  // Left column: move ALL Row 1 content
   const leftCol = createElement('div', ['col-lg-5', 'mb-4', 'mb-lg-0']);
+  if (row1Col) {
+    while (row1Col.firstChild) leftCol.appendChild(row1Col.firstChild);
+  }
 
-  paragraphs.forEach((p) => {
-    if (isLabeled && h2 && (p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-      // Paragraph before h2 with labeled = section label
-      const label = createElement('p', ['section-label']);
-      label.textContent = p.textContent.trim();
-      leftCol.appendChild(label);
-    }
-  });
+  // Add classes to known elements in left column
+  const h2 = leftCol.querySelector('h2');
+
+  if (isLabeled && h2) {
+    const labelP = findParagraphBefore(leftCol, h2);
+    if (labelP) labelP.classList.add('section-label');
+  }
 
   if (h2) {
-    leftCol.appendChild(h2);
-  }
-
-  paragraphs.forEach((p) => {
-    if (h2 && (p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_PRECEDING)) {
-      // Paragraph after h2 = lead
-      p.classList.add('lead');
-      leftCol.appendChild(p);
+    // Paragraphs after h2 get lead class
+    let passed = false;
+    for (const child of [...leftCol.children]) {
+      if (child === h2) { passed = true; continue; }
+      if (passed && child.tagName === 'P') child.classList.add('lead');
     }
-  });
-
-  // Right column: list
-  const rightCol = createElement('div', ['col-lg-6', 'offset-lg-1']);
-  if (ul) {
-    ul.classList.add('dark-block-list');
-    rightCol.appendChild(ul);
   }
+
+  // Right column: move ALL Row 2 content
+  const rightCol = createElement('div', ['col-lg-6', 'offset-lg-1']);
+  if (row2Col) {
+    while (row2Col.firstChild) rightCol.appendChild(row2Col.firstChild);
+  }
+
+  // Add class to the ul
+  const ul = rightCol.querySelector('ul');
+  if (ul) ul.classList.add('dark-block-list');
 
   row.appendChild(leftCol);
   row.appendChild(rightCol);
@@ -152,51 +149,87 @@ function buildDarkBlock(component, fragment, { createElement, isLabeled }) {
 // Two CMS rows: Row 1 = heading content, Row 2 = categorized list
 // ============================================
 function buildTwoColList(component, fragment, { createElement, isLabeled, isChecked, isOneList }) {
-  const rows = [...component.children];
-  const row1Col = rows[0]?.querySelector(':scope > div');
-  const row2Col = rows[1]?.querySelector(':scope > div');
+  const isImaged = component.classList.contains('imaged');
+  const isListLead = component.classList.contains('list-lead');
 
-  const h2 = row1Col?.querySelector('h2');
-  const paragraphs = row1Col ? [...row1Col.querySelectorAll(':scope > p')] : [];
-  const ul = row2Col?.querySelector('ul');
+  const cmsRows = [...component.children];
+  const row1Col = cmsRows[0]?.querySelector(':scope > div');
+  const row2Col = cmsRows[1]?.querySelector(':scope > div');
 
   const container = createElement('div', ['container']);
   const gridRow = createElement('div', ['row']);
 
-  // Left column: section header
-  const leftCol = createElement('div', ['col-lg-5', 'mb-4', 'mb-lg-0']);
+  // Left column: move ALL Row 1 content into section-header
+  const leftCol = createElement('div', [isImaged ? 'col-lg-4' : 'col-lg-5', 'mb-4', 'mb-lg-0']);
   const header = createElement('div', ['section-header']);
 
-  let sectionLabel = null;
-  const leadParagraphs = [];
+  if (row1Col) {
+    while (row1Col.firstChild) header.appendChild(row1Col.firstChild);
+  }
 
-  paragraphs.forEach((p) => {
-    if (isLabeled && !sectionLabel && h2 && (p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-      sectionLabel = p.textContent.trim();
-    } else if (h2 && (p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_PRECEDING)) {
-      leadParagraphs.push(p);
-    }
-  });
+  // Add classes to known elements in header
+  const h2 = header.querySelector('h2');
 
-  if (sectionLabel) {
-    const label = createElement('p', ['section-label']);
-    label.textContent = sectionLabel;
-    header.appendChild(label);
+  if (isLabeled && h2) {
+    const labelP = findParagraphBefore(header, h2);
+    if (labelP) labelP.classList.add('section-label');
   }
 
   if (h2) {
-    header.appendChild(h2);
-  }
+    let passed = false;
+    for (const child of [...header.children]) {
+      if (child === h2) { passed = true; continue; }
+      if (!passed || child.tagName !== 'P') continue;
 
-  leadParagraphs.forEach((p) => {
-    p.classList.add('lead');
-    header.appendChild(p);
-  });
+      // Skip social link paragraphs (imaged variant)
+      if (isImaged && (child.querySelector('a.btn-link') || child.querySelector('.icon'))) continue;
+
+      if (isImaged) {
+        const picture = header.querySelector('picture');
+        if (picture && (child.compareDocumentPosition(picture) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+          child.classList.add('text-muted');
+          continue;
+        }
+      }
+      child.classList.add('lead');
+    }
+  }
 
   leftCol.appendChild(header);
 
-  // Right column
-  const rightCol = createElement('div', ['col-lg-6', 'offset-lg-1']);
+  // For imaged variant: move picture and social links out of header into leftCol
+  if (isImaged) {
+    const picture = header.querySelector('picture');
+    if (picture) {
+      const photoDiv = createElement('div', ['photo']);
+      photoDiv.appendChild(picture);
+      leftCol.appendChild(photoDiv);
+    }
+
+    // Social link paragraphs
+    for (const p of [...header.querySelectorAll(':scope > p')]) {
+      if (p.querySelector('a.btn-link') || p.querySelector('.icon')) {
+        leftCol.appendChild(p);
+      }
+    }
+  }
+
+  // Right column: move ALL Row 2 content
+  const rightCol = createElement('div', [isImaged ? 'col-lg-7' : 'col-lg-6', 'offset-lg-1']);
+  if (row2Col) {
+    while (row2Col.firstChild) rightCol.appendChild(row2Col.firstChild);
+  }
+
+  // Lead paragraphs (list-lead variant) — add classes to existing p elements before ul
+  if (isListLead) {
+    for (const child of [...rightCol.children]) {
+      if (child.tagName === 'UL') break;
+      if (child.tagName === 'P') child.classList.add('lead', 'mb-4');
+    }
+  }
+
+  // Transform the list based on variant
+  const ul = rightCol.querySelector(':scope > ul');
 
   if (ul && isChecked) {
     // Checked variant: flat list with check SVG icons
@@ -217,7 +250,6 @@ function buildTwoColList(component, fragment, { createElement, isLabeled, isChec
       li.appendChild(svg);
       li.appendChild(span);
     });
-    rightCol.appendChild(ul);
   } else if (ul && isOneList) {
     // Single-column product list (flat items with bullet spans)
     ul.classList.add('product-list');
@@ -225,23 +257,22 @@ function buildTwoColList(component, fragment, { createElement, isLabeled, isChec
       const bullet = createElement('span', ['product-bullet']);
       item.insertBefore(bullet, item.firstChild);
     });
-    rightCol.appendChild(ul);
   } else if (ul) {
     // Product lists from nested ul structure (two-column categorized grid)
     const innerRow = createElement('div', ['row', 'g-4']);
-    const items = ul.querySelectorAll(':scope > li');
+    const items = [...ul.querySelectorAll(':scope > li')];
 
     items.forEach((li) => {
       const col = createElement('div', ['col-md-6']);
-      const strong = li.querySelector(':scope > strong');
-      const nestedUl = li.querySelector(':scope > ul');
 
+      const strong = li.querySelector(':scope > strong');
       if (strong) {
         const heading = createElement('h5', ['product-list-heading']);
         heading.textContent = strong.textContent;
         col.appendChild(heading);
       }
 
+      const nestedUl = li.querySelector(':scope > ul');
       if (nestedUl) {
         nestedUl.classList.add('product-list');
         nestedUl.querySelectorAll(':scope > li').forEach((item) => {
@@ -254,7 +285,8 @@ function buildTwoColList(component, fragment, { createElement, isLabeled, isChec
       innerRow.appendChild(col);
     });
 
-    rightCol.appendChild(innerRow);
+    // Replace ul with the grid layout
+    ul.replaceWith(innerRow);
   }
 
   gridRow.appendChild(leftCol);
@@ -266,13 +298,17 @@ function buildTwoColList(component, fragment, { createElement, isLabeled, isChec
 // ============================================
 // Variant: Numbered Grid (numbered grid-3)
 // ============================================
-function buildNumberedGrid(fragment, { createElement, ul, gridCols }) {
+function buildNumberedGrid(component, fragment, { createElement, gridCols }) {
+  const cmsCol = component.querySelector(':scope > div > div');
+  if (!cmsCol) return;
+
   const container = createElement('div', ['container']);
+  const ul = cmsCol.querySelector('ul');
 
   if (ul) {
     const grid = createElement('div', ['numbered-grid']);
     grid.style.gridTemplateColumns = `repeat(${gridCols}, 1fr)`;
-    const items = ul.querySelectorAll(':scope > li');
+    const items = [...ul.querySelectorAll(':scope > li')];
 
     items.forEach((li, index) => {
       const step = createElement('div', ['numbered-step']);
@@ -283,6 +319,8 @@ function buildNumberedGrid(fragment, { createElement, ul, gridCols }) {
 
       const strong = li.querySelector('strong');
       if (strong) {
+        strong.classList.add('step-title');
+        // Convert strong to h4 with step-title class
         const title = createElement('h4', ['step-title']);
         title.textContent = strong.textContent;
         step.appendChild(title);
@@ -307,13 +345,17 @@ function buildNumberedGrid(fragment, { createElement, ul, gridCols }) {
 // ============================================
 // Variant: Stat Bar (card-transparent four-col)
 // ============================================
-function buildStatBar(fragment, { createElement, ul }) {
+function buildStatBar(component, fragment, { createElement }) {
+  const cmsCol = component.querySelector(':scope > div > div');
+  if (!cmsCol) return;
+
   const container = createElement('div', ['container']);
   const statsBar = createElement('div', ['stats-bar']);
   const row = createElement('div', ['row', 'g-4']);
+  const ul = cmsCol.querySelector('ul');
 
   if (ul) {
-    const items = ul.querySelectorAll(':scope > li');
+    const items = [...ul.querySelectorAll(':scope > li')];
 
     items.forEach((li) => {
       const col = createElement('div', ['col-6', 'col-lg-3']);
@@ -341,4 +383,13 @@ function buildStatBar(fragment, { createElement, ul }) {
   statsBar.appendChild(row);
   container.appendChild(statsBar);
   fragment.appendChild(container);
+}
+
+/** Find the first direct-child <p> that appears before the reference element */
+function findParagraphBefore(parent, ref) {
+  for (const child of parent.children) {
+    if (child === ref) return null;
+    if (child.tagName === 'P') return child;
+  }
+  return null;
 }

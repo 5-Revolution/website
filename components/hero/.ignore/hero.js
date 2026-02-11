@@ -39,27 +39,9 @@ function buildHero(component, { createElement }) {
   const colMatch = [...component.classList].find((c) => /^(sm|md|lg|xl|xxl)-\d+$/.test(c));
   const colClass = colMatch ? `col-${colMatch}` : 'col-lg-10';
 
-  // Extract content from CMS structure (component > div > div > content)
-  const contentCol = component.querySelector(':scope > div > div');
-  if (!contentCol) return;
-
-  const h1 = contentCol.querySelector('h1');
-  const paragraphs = [...contentCol.querySelectorAll(':scope > p')];
-
-  let sectionLabel = null;
-  let descriptionText = '';
-  let ctaLink = null;
-
-  paragraphs.forEach((p) => {
-    const btn = p.querySelector('a.btn-primary');
-    if (btn) {
-      ctaLink = btn;
-    } else if (isLabeled && !sectionLabel && h1 && (p.compareDocumentPosition(h1) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-      sectionLabel = p.textContent.trim();
-    } else if (p.textContent.trim()) {
-      descriptionText = p.innerHTML;
-    }
-  });
+  // Get CMS content container
+  const cmsCol = component.querySelector(':scope > div > div');
+  if (!cmsCol) return;
 
   const fragment = document.createDocumentFragment();
 
@@ -81,56 +63,80 @@ function buildHero(component, { createElement }) {
     fragment.appendChild(gridPattern);
   }
 
-  // Build content elements
+  // Build wrapper structure
   const container = createElement('div', ['container']);
   const bsRow = createElement('div', ['row']);
   const col = createElement('div', [colClass]);
 
+  // Determine the innermost content target
+  let contentTarget;
   if (hasHeroLogo) {
-    // Hero-logo variant: hero-inner + hero-content wrappers for flex centering + max-width
     const heroInner = createElement('div', ['hero-inner']);
     const heroContent = createElement('div', ['hero-content']);
-
-    appendHeroContent(heroContent, { createElement, sectionLabel, h1, descriptionText, ctaLink });
-
+    contentTarget = heroContent;
     col.appendChild(heroContent);
     bsRow.appendChild(col);
     heroInner.appendChild(bsRow);
     container.appendChild(heroInner);
   } else {
-    // Regular hero: content directly in column, no extra wrappers
-    appendHeroContent(col, { createElement, sectionLabel, h1, descriptionText, ctaLink });
-
+    contentTarget = col;
     bsRow.appendChild(col);
     container.appendChild(bsRow);
   }
 
-  fragment.appendChild(container);
+  // Move ALL children from CMS col into content target (preserves order + unknown elements)
+  while (cmsCol.firstChild) contentTarget.appendChild(cmsCol.firstChild);
 
-  while (component.firstChild) component.removeChild(component.firstChild);
-  component.appendChild(fragment);
-}
+  // Add classes to known elements (now inside the wrapper)
+  const h1 = contentTarget.querySelector('h1');
 
-function appendHeroContent(target, { createElement, sectionLabel, h1, descriptionText, ctaLink }) {
-  if (sectionLabel) {
-    const label = createElement('p', ['section-label']);
-    label.textContent = sectionLabel;
-    target.appendChild(label);
+  if (isLabeled && h1) {
+    // First p before h1 becomes section label
+    const labelP = findParagraphBefore(contentTarget, h1);
+    if (labelP) labelP.classList.add('section-label');
   }
 
   if (h1) {
     h1.classList.add('display-headline');
-    target.appendChild(h1);
+
+    // First p after h1 (without a link child) becomes subheadline
+    const descP = findDescriptionAfter(contentTarget, h1);
+    if (descP) descP.classList.add('subheadline');
   }
 
-  if (descriptionText) {
-    const desc = createElement('p', ['subheadline']);
-    desc.innerHTML = descriptionText;
-    target.appendChild(desc);
-  }
-
+  // CTA link: extract from wrapper <p>, add btn-lg
+  const ctaLink = contentTarget.querySelector('a.btn-primary');
   if (ctaLink) {
     ctaLink.classList.add('btn-lg');
-    target.appendChild(ctaLink);
+    // If the link is wrapped in a <p>, replace the <p> with just the link
+    const parentP = ctaLink.parentElement;
+    if (parentP && parentP.tagName === 'P') {
+      parentP.replaceWith(ctaLink);
+    }
   }
+
+  fragment.appendChild(container);
+
+  // Replace CMS wrappers with new structure
+  while (component.firstChild) component.removeChild(component.firstChild);
+  component.appendChild(fragment);
+}
+
+/** Find the first direct-child <p> that appears before the reference element */
+function findParagraphBefore(parent, ref) {
+  for (const child of parent.children) {
+    if (child === ref) return null;
+    if (child.tagName === 'P') return child;
+  }
+  return null;
+}
+
+/** Find the first direct-child <p> after ref that has no link child (description, not CTA) */
+function findDescriptionAfter(parent, ref) {
+  let passed = false;
+  for (const child of parent.children) {
+    if (child === ref) { passed = true; continue; }
+    if (passed && child.tagName === 'P' && !child.querySelector('a')) return child;
+  }
+  return null;
 }

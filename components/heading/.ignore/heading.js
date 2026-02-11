@@ -28,42 +28,53 @@ function buildHeading(component, { createElement }) {
   const isLabeled = component.classList.contains('labeled');
   const isCenter = component.classList.contains('aligned-center');
 
-  const col = component.querySelector(':scope > div > div');
-  if (!col) return;
+  const cmsCol = component.querySelector(':scope > div > div');
+  if (!cmsCol) return;
 
-  const h2 = col.querySelector('h2');
-  const paragraphs = col.querySelectorAll(':scope > p');
-
-  let sectionLabel = null;
-  let subtitle = null;
-
-  paragraphs.forEach((p) => {
-    if (isLabeled && !sectionLabel && h2 && p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_FOLLOWING) {
-      sectionLabel = p.textContent.trim();
-    } else if (h2 && p.compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_PRECEDING) {
-      subtitle = p.innerHTML;
-    }
-  });
-
+  // Create wrapper structure
   const container = createElement('div', ['container']);
   const header = createElement('div', ['section-header', isCenter ? 'text-center' : ''].filter(Boolean));
 
-  if (sectionLabel) {
-    const label = createElement('p', ['section-label']);
-    label.textContent = sectionLabel;
-    header.appendChild(label);
+  // Move ALL children from CMS col into section-header (preserves order + unknown elements)
+  while (cmsCol.firstChild) header.appendChild(cmsCol.firstChild);
+
+  // Add classes to known elements (now inside the header)
+  const h2 = header.querySelector('h2');
+
+  if (isLabeled && h2) {
+    // First p before h2 becomes section label
+    const firstP = findParagraphBefore(header, h2);
+    if (firstP) firstP.classList.add('section-label');
   }
+
   if (h2) {
-    header.appendChild(h2);
-  }
-  if (subtitle) {
-    const sub = createElement('p', ['subheadline']);
-    sub.innerHTML = subtitle;
-    header.appendChild(sub);
+    // First p after h2 becomes subheadline
+    const nextP = findParagraphAfter(header, h2);
+    if (nextP) nextP.classList.add('subheadline');
   }
 
   container.appendChild(header);
 
+  // Replace CMS wrappers with new structure
   while (component.firstChild) component.removeChild(component.firstChild);
   component.appendChild(container);
+}
+
+/** Find the first direct-child <p> that appears before the reference element */
+function findParagraphBefore(parent, ref) {
+  for (const child of parent.children) {
+    if (child === ref) return null;
+    if (child.tagName === 'P') return child;
+  }
+  return null;
+}
+
+/** Find the first direct-child <p> that appears after the reference element */
+function findParagraphAfter(parent, ref) {
+  let passed = false;
+  for (const child of parent.children) {
+    if (child === ref) { passed = true; continue; }
+    if (passed && child.tagName === 'P') return child;
+  }
+  return null;
 }

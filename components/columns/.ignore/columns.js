@@ -317,10 +317,15 @@ function buildCopyrightBar(component, { createElement }) {
   const bottomRow = createElement('div', ['row', 'align-items-center']);
   const bottomCol = createElement('div', ['col-md-6']);
 
-  const paragraph = col?.querySelector('p');
+  // Move ALL children from CMS col
+  if (col) {
+    while (col.firstChild) bottomCol.appendChild(col.firstChild);
+  }
+
+  // Add classes to known elements
+  const paragraph = bottomCol.querySelector('p');
   if (paragraph) {
     paragraph.classList.add('footer-copyright', 'mb-0');
-    bottomCol.appendChild(paragraph);
   }
 
   bottomRow.appendChild(bottomCol);
