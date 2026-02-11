@@ -45,7 +45,8 @@
   box-shadow: 0 0 0 0 rgba($accent-warm, 0);
 
   &:hover,
-  &:focus {
+  &:focus,
+  &:active {
     background-color: color.adjust($accent-warm, $lightness: -8%);
     border-color: color.adjust($accent-warm, $lightness: -8%);
     color: $primary;
@@ -59,7 +60,8 @@
   color: $primary;
 
   &:hover,
-  &:focus {
+  &:focus,
+  &:active {
     background-color: $primary;
     border-color: $primary;
     color: #ffffff;
@@ -71,7 +73,8 @@
   color: #ffffff;
 
   &:hover,
-  &:focus {
+  &:focus,
+  &:active {
     background-color: #ffffff;
     border-color: #ffffff;
     color: $primary;
