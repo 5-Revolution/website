@@ -46,7 +46,10 @@
 
   &:hover,
   &:focus,
-  &:active {
+  &:active,
+  &:first-child:active,
+  &.active,
+  &.show {
     background-color: color.adjust($accent-warm, $lightness: -8%);
     border-color: color.adjust($accent-warm, $lightness: -8%);
     color: $primary;
@@ -61,7 +64,10 @@
 
   &:hover,
   &:focus,
-  &:active {
+  &:active,
+  &:first-child:active,
+  &.active,
+  &.show {
     background-color: $primary;
     border-color: $primary;
     color: #ffffff;
@@ -74,7 +80,10 @@
 
   &:hover,
   &:focus,
-  &:active {
+  &:active,
+  &:first-child:active,
+  &.active,
+  &.show {
     background-color: #ffffff;
     border-color: #ffffff;
     color: $primary;
