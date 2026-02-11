@@ -55,8 +55,13 @@ class SiteScrollAnimations {
     });
 
     this.initLenis();
-    // Initial states are handled by CSS (main.scss) — no gsap.set() needed.
-    // This prevents the flash where content appears then hides when GSAP loads.
+    // Signal CSS to apply hidden initial states — only when JS + GSAP are ready
+    // to animate them visible. Without this class, content stays visible (no-JS fallback).
+    // Skip when reduced motion is preferred — CSS media query handles that too,
+    // but not adding the class at all is the most robust approach.
+    if (!this.prefersReducedMotion) {
+      document.documentElement.classList.add('js-animations');
+    }
     this.animateAll();
     this.setupResize();
 

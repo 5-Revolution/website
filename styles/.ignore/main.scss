@@ -363,41 +363,46 @@ $animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
 // Elements start hidden — GSAP animates them in.
 // Prevents flash: content won't show then hide
 // when GSAP loads after initial render.
+//
+// Scoped behind html.js-animations so content
+// remains visible if JS fails to load.
 // ============================================
-.section-label:not(.hero-page .section-label),
-.section-header h2,
-.section-header .subheadline,
-.default-wrapper > p:has(> em),
-.default-wrapper > p:has(> em) + h2,
-.card-item,
-.stat-item,
-.bulleted-list li,
-.dark-block-list li,
-.numbered-step,
-.phase-card,
-.feature-block,
-.capability-list li,
-.blockquote-feature,
-.cta-block h2,
-.cta-block p,
-.cta-block .btn,
-.product-list li,
-.expect-item,
-.contact-form-wrapper,
-.contact-info {
-  opacity: 0;
-  transform: translateY(30px);
-}
+html.js-animations {
+  .section-label:not(.hero-page .section-label),
+  .section-header h2,
+  .section-header .subheadline,
+  .default-wrapper > p:has(> em),
+  .default-wrapper > p:has(> em) + h2,
+  .card-item,
+  .stat-item,
+  .bulleted-list li,
+  .dark-block-list li,
+  .numbered-step,
+  .phase-card,
+  .feature-block,
+  .capability-list li,
+  .blockquote-feature,
+  .cta-block h2,
+  .cta-block p,
+  .cta-block .btn,
+  .product-list li,
+  .expect-item,
+  .contact-form-wrapper,
+  .contact-info {
+    opacity: 0;
+    transform: translateY(30px);
+  }
 
-.stats-bar {
-  opacity: 0;
-  transform: scale(0.95);
-}
+  .stats-bar {
+    opacity: 0;
+    transform: scale(0.95);
+  }
 
-.credibility-text,
-.lead:not(.hero-content .subheadline) {
-  opacity: 0;
-  transform: translateY(20px);
+  .credibility-text,
+  .lead:not(.hero-content .subheadline) {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 }
 
 // ============================================
@@ -443,6 +448,8 @@ html.lenis body {
   .section-label,
   .section-header h2,
   .section-header .subheadline,
+  .default-wrapper > p:has(> em),
+  .default-wrapper > p:has(> em) + h2,
   .card-item,
   .stat-item,
   .stats-bar,
