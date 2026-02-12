@@ -6,6 +6,7 @@
 .card-item {
   background: #ffffff;
   border: 1px solid $subtleGray;
+  border-left: 3px solid transparent; // Reserve space for hover accent
   border-radius: 12px;
   padding: 2.5rem;
   height: 100%;
@@ -13,7 +14,7 @@
 
   &:hover {
     border-color: $accent-warm;
-    border-left: 3px solid $accent-warm;
+    border-left-color: $accent-warm;
     transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba($primary, 0.08);
   }

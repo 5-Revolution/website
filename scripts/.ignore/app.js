@@ -167,6 +167,7 @@ class SiteScrollAnimations {
     this.animateCredibilityText();
     this.animateContactPage();
     this.animateLeadText();
+    this.animateArticleCards();
   }
 
   animateSectionHeaders() {
@@ -414,6 +415,25 @@ class SiteScrollAnimations {
       this.animateOnScroll(lead, {
         opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease,
       }, lead);
+    });
+  }
+
+  animateArticleCards() {
+    const cards = this.newElements('.article-card');
+    if (!cards.length) return;
+
+    const rows = new Map();
+    cards.forEach((card) => {
+      const row = card.closest('.row');
+      if (!rows.has(row)) rows.set(row, []);
+      rows.get(row).push(card);
+    });
+
+    rows.forEach((rowCards, row) => {
+      this.animateOnScroll(rowCards, {
+        opacity: 1, y: 0, duration: this.config.duration.normal,
+        stagger: this.config.stagger.cards, ease: this.config.ease,
+      }, row);
     });
   }
 
