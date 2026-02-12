@@ -169,12 +169,17 @@ $transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-.coming-soon-icon {
-  width: 64px;
-  height: 64px;
+.coming-soon .icon {
+  display: block;
   margin: 0 auto 2rem;
-  color: $accent-warm;
-  opacity: 0.6;
+
+  img {
+    width: 64px;
+    height: 64px;
+    // Black → amber (#f59e0b) filter
+    filter: invert(62%) sepia(85%) saturate(1200%) hue-rotate(12deg) brightness(102%) contrast(95%);
+    opacity: 0.6;
+  }
 }
 
 // ---------------------------------------------------------------------------
