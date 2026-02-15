@@ -723,8 +723,17 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     // Phase 4b: Nav scroll behavior + brand animation
     // If nav is already rendered (prerendered HTML), set up immediately.
     // Otherwise, wait for the component:loaded event.
-    if (document.getElementById('mainNav')) {
+    const prerenderedNav = document.getElementById('mainNav');
+    if (prerenderedNav) {
       setupNavbarScroll();
+      // Correct light/dark state — prerendered nav may have wrong class for this page
+      const lightNavPages = ['contact'];
+      const isLight = lightNavPages.some((page) => document.body.classList.contains(page));
+      if (isLight) {
+        prerenderedNav.classList.remove('navbar-dark');
+      } else if (!prerenderedNav.classList.contains('navbar-dark')) {
+        prerenderedNav.classList.add('navbar-dark');
+      }
     }
     document.addEventListener('component:loaded', (event) => {
       if (event.detail?.componentName === 'nav') {
