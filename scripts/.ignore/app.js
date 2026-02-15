@@ -705,6 +705,9 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
       document.documentElement.classList.add('touch-device');
     }
 
+    // Phase 0: Ensure CSS is loaded for all components (handles prerendered pages)
+    this.ensureAllComponentCSS();
+
     // Phase 1: Critical components (nav)
     this.criticalExecutor.executeImmediate();
 
