@@ -29,9 +29,6 @@ export default async function initializeFooterBrand(component) {
 
 function buildFooterBrand(component, { createElement }) {
   const footerEl = component.closest('footer');
-  if (footerEl) {
-    footerEl.classList.add('footer');
-  }
 
   // Get CMS content container
   const cmsRow = component.children[0];

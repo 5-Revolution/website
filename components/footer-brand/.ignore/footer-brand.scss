@@ -1,11 +1,9 @@
 @import "../../../styles/.ignore/variables";
 
 // ============================================
-// Footer Container (on <footer> element)
-// Applied by footer-brand JS via closest('footer')
-// Uses Bootstrap container + row classes added by JS
+// Footer Container (semantic <footer> element)
 // ============================================
-.footer {
+footer {
   background: $primary;
   color: rgba(255, 255, 255, 0.7);
   padding: 4rem 0 2rem;
@@ -49,7 +47,7 @@
 // Responsive
 // ============================================
 @media (max-width: 575.98px) {
-  .footer {
+  footer {
     padding: 3rem 0 1.5rem;
   }
 }

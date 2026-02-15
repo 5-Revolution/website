@@ -717,9 +717,12 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     // Phase 4: Navigation behaviors
     SiteProgressiveEnhancement.setupSiteNavigation();
 
-    // Phase 4b: Nav component listener — scroll behavior + brand animation
-    // Nav is async (critical but uses await import), so #mainNav won't exist yet.
-    // Set up scroll + animation once the nav component finishes building.
+    // Phase 4b: Nav scroll behavior + brand animation
+    // If nav is already rendered (prerendered HTML), set up immediately.
+    // Otherwise, wait for the component:loaded event.
+    if (document.getElementById('mainNav')) {
+      setupNavbarScroll();
+    }
     document.addEventListener('component:loaded', (event) => {
       if (event.detail?.componentName === 'nav') {
         setupNavbarScroll();
