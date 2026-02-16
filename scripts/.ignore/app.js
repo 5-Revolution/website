@@ -724,6 +724,7 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     const prerenderedNav = document.getElementById('mainNav');
     if (prerenderedNav) {
       setupNavbarScroll();
+      playNavbarAnimation(); // Return visits show brand immediately (no GSAP needed)
       // Correct light/dark state — prerendered nav may have wrong class for this page
       const lightNavPages = ['contact'];
       const isLight = lightNavPages.some((page) => document.body.classList.contains(page));
