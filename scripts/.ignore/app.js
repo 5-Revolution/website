@@ -521,6 +521,12 @@ function setNavbarFinalState() {
 function playNavbarAnimation() {
   if (document.body.classList.contains('optimize')) return;
 
+  // Return visit — show final state immediately (no GSAP needed)
+  if (sessionStorage.getItem(NAVBAR_ANIM_SESSION_KEY)) {
+    setNavbarFinalState();
+    return;
+  }
+
   // If GSAP hasn't loaded yet, defer — orchestrator will call after vendor load
   if (typeof gsap === 'undefined') return;
 
@@ -529,14 +535,6 @@ function playNavbarAnimation() {
   const groups = document.querySelectorAll('.navbar-v-group');
   const wheel = document.querySelector('.navbar-wheel-group');
   const brandText = document.getElementById('navbarBrandText');
-
-  if (!groups.length || !wheel || !logo || !navbarBrand) return;
-
-  // Return visit — show final state immediately
-  if (sessionStorage.getItem(NAVBAR_ANIM_SESSION_KEY)) {
-    setNavbarFinalState();
-    return;
-  }
 
   // First visit — animate
   navbarBrand.style.transform = 'scale(2)';
