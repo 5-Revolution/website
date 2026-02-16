@@ -1,5 +1,36 @@
 @import "../../../styles/.ignore/variables";
 
+// Bootstrap navbar modules (moved from lazy.scss to prevent FOUC)
+@import "../../../node_modules/bootstrap/scss/nav";
+@import "../../../node_modules/bootstrap/scss/navbar";
+
+// Bootstrap rules needed by nav but too heavy to import full modules
+.fixed-top {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: $zindex-fixed;
+}
+
+.collapse:not(.show) {
+  display: none;
+}
+
+.justify-content-end {
+  justify-content: flex-end !important;
+}
+
+@media (min-width: 992px) {
+  .align-items-lg-center {
+    align-items: center !important;
+  }
+
+  .ms-lg-3 {
+    margin-left: 1rem !important;
+  }
+}
+
 // ============================================
 // Navbar Base
 // ============================================
