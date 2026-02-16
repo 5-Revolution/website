@@ -3,6 +3,7 @@
 // Loaded in <head>, blocks rendering
 // ============================================
 
+@use "sass:color";
 @import "./variables";
 
 // Bootstrap critical modules only
@@ -207,6 +208,66 @@ section.labeled .default-wrapper {
     font-weight: 600;
     line-height: 1.4;
     display: block;
+  }
+}
+
+// ============================================
+// Buttons — above-fold only (rest in lazy.scss)
+// ============================================
+@import "../../node_modules/bootstrap/scss/buttons";
+
+.btn {
+  font-family: $font-family-base;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: $accent-warm;
+  border-color: $accent-warm;
+  color: $primary;
+  box-shadow: 0 0 0 0 rgba($accent-warm, 0);
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:first-child:active,
+  &.active,
+  &.show {
+    background-color: color.adjust($accent-warm, $lightness: -8%);
+    border-color: color.adjust($accent-warm, $lightness: -8%);
+    color: $primary;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba($accent-warm, 0.35);
+  }
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
+.btn-link {
+  color: $primary;
+  text-decoration: none;
+  padding: 0;
+  font-weight: 600;
+
+  &:hover {
+    color: $accent-warm;
+  }
+
+  .arrow {
+    display: inline-block;
+    margin-left: 0.5rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover .arrow {
+    transform: translateX(4px);
   }
 }
 
