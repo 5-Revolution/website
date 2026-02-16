@@ -112,11 +112,6 @@ section:has(.component.hero) {
 // Responsive
 // ============================================
 @media (max-width: 991.98px) {
-  .component.hero.vh-100 {
-    height: auto !important;
-    min-height: auto;
-  }
-
   .hero-inner {
     min-height: auto;
     padding-top: 3rem;
