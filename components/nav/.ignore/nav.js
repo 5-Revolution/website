@@ -6,13 +6,22 @@
  * CMS input:
  *   Row 1: Brand — icon + underlined link
  *   Row 2: Nav links — <ul> with btn-link and btn-primary classes
+ *            Nested <ul> inside an <li> becomes a dropdown submenu
+ *            Sub-items: <a><u>Name</u></a> Description text (text node = description)
  *
  * Output: Adds navbar classes to existing <nav>, replaces content with:
  *   - SVG logo + brand text (animated via app.js)
  *   - Mobile toggler
  *   - Collapsible nav links + CTA button
+ *   - CSS-only dropdown for nested lists (no Bootstrap dropdown.js)
  *   - Dark/light variant from body class (most pages dark; body.contact = light)
  */
+
+// Chevron SVG for dropdown indicator (inline to avoid network request)
+const CHEVRON_SVG = `<svg class="nav-dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+// Arrow SVG for "View All" link
+const ARROW_SVG = `<svg class="nav-dropdown-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 // Pages with light navbar (all others default to dark)
 const LIGHT_NAV_PAGES = ['contact'];
@@ -101,10 +110,11 @@ function buildNavbar(component, { createElement }) {
     for (const li of navList.querySelectorAll(':scope > li')) {
       li.classList.add('nav-item');
 
-      const link = li.querySelector('a');
+      const link = li.querySelector(':scope > a');
       if (!link) continue;
 
       const isPrimary = link.classList.contains('btn-primary');
+      const subList = li.querySelector(':scope > ul');
 
       // Strip CMS utility classes
       link.classList.remove('btn', 'btn-link');
@@ -112,6 +122,9 @@ function buildNavbar(component, { createElement }) {
       if (isPrimary) {
         li.classList.add('ms-lg-3');
         link.classList.add('btn', 'btn-primary');
+      } else if (subList) {
+        // --- Dropdown item ---
+        transformDropdown(li, link, subList, { createElement });
       } else {
         link.classList.add('nav-link');
         if (!link.classList.length) link.removeAttribute('class');
@@ -127,4 +140,160 @@ function buildNavbar(component, { createElement }) {
   // Replace CMS wrappers with navbar structure
   while (component.firstChild) component.removeChild(component.firstChild);
   component.appendChild(container);
+}
+
+/**
+ * Transform a nav item with a nested <ul> into a dropdown.
+ * Keeps the parent link clickable (navigates to its href).
+ * Uses a separate visually-hidden toggle for ARIA, but CSS
+ * handles hover/focus-within for show/hide on desktop.
+ *
+ * Mobile: subnav renders inline (expanded), no hover needed.
+ */
+function transformDropdown(li, link, subList, { createElement }) {
+  const dropdownId = `dropdown-${link.textContent.trim().toLowerCase().replace(/\s+/g, '-')}`;
+
+  // Mark the parent <li> as a dropdown container
+  li.classList.add('nav-dropdown');
+
+  // Transform the parent link — keep it navigable, add chevron
+  link.classList.add('nav-link', 'nav-dropdown-toggle');
+  link.setAttribute('aria-expanded', 'false');
+  link.setAttribute('aria-haspopup', 'true');
+  link.setAttribute('aria-controls', dropdownId);
+  link.insertAdjacentHTML('beforeend', ` ${CHEVRON_SVG}`);
+
+  // Transform the sub-list into a dropdown menu
+  subList.classList.add('nav-dropdown-menu');
+  subList.id = dropdownId;
+  subList.setAttribute('role', 'menu');
+  subList.setAttribute('aria-label', `${link.textContent.trim()} submenu`);
+
+  // Transform each sub-item — extract name from <a> and description from <li> text nodes
+  const subItems = subList.querySelectorAll(':scope > li');
+  for (const subLi of subItems) {
+    subLi.classList.add('nav-dropdown-item');
+    subLi.setAttribute('role', 'none');
+
+    const subLink = subLi.querySelector('a');
+    if (subLink) {
+      // Extract description text from <li> text nodes (sibling text after the <a>)
+      const nameText = subLink.textContent.trim();
+      let desc = '';
+      for (const node of subLi.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent.trim();
+          if (text) desc = text;
+        }
+      }
+
+      // Clean the <li> — remove loose text nodes
+      for (const node of [...subLi.childNodes]) {
+        if (node.nodeType === Node.TEXT_NODE) node.remove();
+      }
+
+      subLink.classList.remove('btn', 'btn-link', 'btn-primary');
+      subLink.classList.add('nav-dropdown-link');
+      subLink.setAttribute('role', 'menuitem');
+
+      // Restructure link: name span + optional description span
+      subLink.textContent = '';
+      const nameSpan = createElement('span', ['nav-dropdown-name']);
+      nameSpan.textContent = nameText;
+      subLink.appendChild(nameSpan);
+
+      if (desc) {
+        const descSpan = createElement('span', ['nav-dropdown-desc']);
+        descSpan.textContent = desc;
+        subLink.appendChild(descSpan);
+      }
+    }
+  }
+
+  // Add "View All Services" footer link
+  const footerLi = createElement('li', ['nav-dropdown-footer'], { role: 'none' });
+  const footerLink = createElement('a', ['nav-dropdown-link', 'nav-dropdown-viewall'], {
+    href: link.getAttribute('href') || '/services/',
+    role: 'menuitem',
+  });
+  footerLink.innerHTML = `<span class="nav-dropdown-name">View All Services</span> ${ARROW_SVG}`;
+  footerLi.appendChild(footerLink);
+  subList.appendChild(footerLi);
+
+  // Mobile: tap toggles dropdown instead of navigating
+  link.addEventListener('click', (e) => {
+    const isMobile = window.innerWidth < 992;
+    if (!isMobile) return; // Desktop: let hover handle it, link navigates
+
+    e.preventDefault();
+    const isOpen = li.classList.contains('dropdown-open');
+    li.classList.toggle('dropdown-open', !isOpen);
+    link.setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  // Keyboard support: toggle on Enter/Space, close on Escape
+  link.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      // On Enter, navigate (default behavior). On Space, toggle dropdown.
+      if (e.key === ' ') {
+        e.preventDefault();
+        const isOpen = li.classList.contains('dropdown-open');
+        li.classList.toggle('dropdown-open', !isOpen);
+        link.setAttribute('aria-expanded', String(!isOpen));
+      }
+    } else if (e.key === 'Escape') {
+      li.classList.remove('dropdown-open');
+      link.setAttribute('aria-expanded', 'false');
+      link.focus();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const firstItem = subList.querySelector('.nav-dropdown-link');
+      if (firstItem) {
+        li.classList.add('dropdown-open');
+        link.setAttribute('aria-expanded', 'true');
+        firstItem.focus();
+      }
+    }
+  });
+
+  // Keyboard nav within dropdown items
+  subList.addEventListener('keydown', (e) => {
+    const items = [...subList.querySelectorAll('.nav-dropdown-link')];
+    const idx = items.indexOf(document.activeElement);
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = items[idx + 1] || items[0];
+      next.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (idx <= 0) {
+        link.focus();
+      } else {
+        items[idx - 1].focus();
+      }
+    } else if (e.key === 'Escape') {
+      li.classList.remove('dropdown-open');
+      link.setAttribute('aria-expanded', 'false');
+      link.focus();
+    } else if (e.key === 'Tab') {
+      // Let Tab proceed naturally; close dropdown when focus leaves
+      requestAnimationFrame(() => {
+        if (!li.contains(document.activeElement)) {
+          li.classList.remove('dropdown-open');
+          link.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  });
+
+  // Close dropdown when focus leaves the entire nav-dropdown
+  li.addEventListener('focusout', (e) => {
+    requestAnimationFrame(() => {
+      if (!li.contains(document.activeElement)) {
+        li.classList.remove('dropdown-open');
+        link.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
 }
