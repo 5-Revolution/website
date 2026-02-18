@@ -429,7 +429,7 @@ $animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
 // remains visible if JS fails to load.
 // ============================================
 html.js-animations {
-  .section-label:not(.hero-page .section-label),
+  .section-label,
   .section-header h2,
   .section-header .subheadline,
   .default-wrapper > p:has(> em),
@@ -463,6 +463,12 @@ html.js-animations {
   .lead:not(.hero-content .subheadline) {
     opacity: 0;
     transform: translateY(20px);
+  }
+
+  // Hero labels are above the fold — keep them visible (GSAP animates below-fold labels)
+  [data-priority="critical"] .section-label {
+    opacity: 1;
+    transform: none;
   }
 }
 
