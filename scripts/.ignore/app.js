@@ -643,6 +643,87 @@ function playNavbarAnimation() {
 }
 
 // ============================================
+// 5b. Navbar Dropdown Interaction
+// Attached at runtime (survives prerendering)
+// ============================================
+function setupNavbarDropdowns() {
+  document.querySelectorAll('.nav-dropdown').forEach((li) => {
+    if (li.dataset.dropdownInit) return;
+    li.dataset.dropdownInit = '1';
+
+    const link = li.querySelector('.nav-dropdown-toggle');
+    const menu = li.querySelector('.nav-dropdown-menu');
+    if (!link || !menu) return;
+
+    // Mobile: tap toggles dropdown instead of navigating
+    link.addEventListener('click', (e) => {
+      if (window.innerWidth >= 992) return;
+      e.preventDefault();
+      const isOpen = li.classList.contains('dropdown-open');
+      li.classList.toggle('dropdown-open', !isOpen);
+      link.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // Keyboard: Space toggles, Escape closes, ArrowDown opens + focuses first item
+    link.addEventListener('keydown', (e) => {
+      if (e.key === ' ') {
+        e.preventDefault();
+        const isOpen = li.classList.contains('dropdown-open');
+        li.classList.toggle('dropdown-open', !isOpen);
+        link.setAttribute('aria-expanded', String(!isOpen));
+      } else if (e.key === 'Escape') {
+        li.classList.remove('dropdown-open');
+        link.setAttribute('aria-expanded', 'false');
+        link.focus();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const first = menu.querySelector('.nav-dropdown-link');
+        if (first) {
+          li.classList.add('dropdown-open');
+          link.setAttribute('aria-expanded', 'true');
+          first.focus();
+        }
+      }
+    });
+
+    // Arrow nav within dropdown items
+    menu.addEventListener('keydown', (e) => {
+      const items = [...menu.querySelectorAll('.nav-dropdown-link')];
+      const idx = items.indexOf(document.activeElement);
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        (items[idx + 1] || items[0]).focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        (idx <= 0 ? link : items[idx - 1]).focus();
+      } else if (e.key === 'Escape') {
+        li.classList.remove('dropdown-open');
+        link.setAttribute('aria-expanded', 'false');
+        link.focus();
+      } else if (e.key === 'Tab') {
+        requestAnimationFrame(() => {
+          if (!li.contains(document.activeElement)) {
+            li.classList.remove('dropdown-open');
+            link.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    });
+
+    // Close when focus leaves
+    li.addEventListener('focusout', () => {
+      requestAnimationFrame(() => {
+        if (!li.contains(document.activeElement)) {
+          li.classList.remove('dropdown-open');
+          link.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+  });
+}
+
+// ============================================
 // 6. Site Progressive Enhancement
 // ============================================
 class SiteProgressiveEnhancement extends core.ProgressiveEnhancement {
@@ -724,6 +805,7 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     const prerenderedNav = document.getElementById('mainNav');
     if (prerenderedNav) {
       setupNavbarScroll();
+      setupNavbarDropdowns();
       playNavbarAnimation(); // Return visits show brand immediately (no GSAP needed)
       // Correct light/dark state — prerendered nav may have wrong class for this page
       const lightNavPages = ['contact'];
@@ -737,6 +819,7 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     document.addEventListener('component:loaded', (event) => {
       if (event.detail?.componentName === 'nav') {
         setupNavbarScroll();
+        setupNavbarDropdowns();
         playNavbarAnimation();
       }
     });
