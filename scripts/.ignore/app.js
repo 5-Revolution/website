@@ -483,12 +483,12 @@ const NAVBAR_ANIM_SESSION_KEY = 'navbar_animated';
 
 const navbarAnimConfig = {
   angularVelocity: 150,
-  staggerDelay: 0.2,
+  staggerDelay: 0.25,
   maxRadius: 29,
 };
 
 const finalAngles = [0, 72, 144, 216, 288];
-const spiralConfig = { duration: 1, rotation: 90 };
+const spiralConfig = { duration: 0.7, rotation: 90 };
 const circleTravel = [270, 342, 54, 126, 198];
 const animationOrder = [1, 0, 4, 3, 2];
 
@@ -609,7 +609,7 @@ function playNavbarAnimation() {
   const wheelRotation = { angle: 0 };
   tl.to(wheelRotation, {
     angle: 216,
-    duration: 3,
+    duration: 1.8,
     ease: 'power2.out',
     onUpdate() {
       wheel.setAttribute('transform', `translate(60,60) rotate(${wheelRotation.angle})`);
@@ -619,14 +619,14 @@ function playNavbarAnimation() {
   // Text reveal
   tl.add(() => {
     if (brandText) brandText.classList.add('revealed');
-  }, allDoneTime + 2);
+  }, allDoneTime + 0.6);
 
   // Shrink brand back to 1x
   tl.to(navbarBrand, {
     scale: 1,
-    duration: 0.8,
+    duration: 0.6,
     ease: 'power2.out',
-  }, allDoneTime + 2.8);
+  }, allDoneTime + 0.6 + 0.3);
 
   // Fade in mobile toggler after brand animation completes
   const toggler = navbarBrand.closest('.navbar')?.querySelector('.navbar-toggler');
@@ -636,7 +636,7 @@ function playNavbarAnimation() {
       duration: 0.4,
       ease: 'power2.out',
       onComplete() { toggler.classList.add('visible'); },
-    }, allDoneTime + 3.2);
+    }, allDoneTime + 0.6 + 0.3 + 0.5);
   }
 
   tl.play();
