@@ -164,6 +164,40 @@ section {
     padding-top: $section-spacing-lg;
     padding-bottom: $section-spacing-lg;
   }
+
+  &.section-tight {
+    padding-top: 1.5rem;
+    padding-bottom: 0.5rem;
+
+    h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+    h3 { font-size: clamp(1.25rem, 2.5vw, 1.5rem); }
+
+    @media (min-width: 768px) {
+      padding-top: 2.5rem;
+      padding-bottom: 0.75rem;
+    }
+
+    @media (min-width: 1200px) {
+      padding-top: 3rem;
+      padding-bottom: 1rem;
+    }
+
+    + .section-tight::before {
+      content: '';
+      display: block;
+      max-width: 800px;
+      margin: 0 auto 1.5rem;
+      border-top: 1px solid $subtleGray;
+
+      @media (min-width: 768px) {
+        margin-bottom: 2.5rem;
+      }
+
+      @media (min-width: 1200px) {
+        margin-bottom: 3rem;
+      }
+    }
+  }
 }
 
 // ============================================
@@ -273,6 +307,95 @@ section.labeled .default-wrapper {
 
   &:hover .arrow {
     transform: translateX(4px);
+  }
+}
+
+// ============================================
+// Cookie Notice Banner
+// ============================================
+.cookie-notice {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1035;
+  background: rgba($primary, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.875rem 0;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 300ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.cookie-notice-active {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &.cookie-notice-dismiss {
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.cookie-notice-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.cookie-notice-text {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.cookie-notice-link {
+  color: $accent-warm;
+  text-decoration: none;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    color: #fbbf24;
+    text-decoration: underline;
+  }
+}
+
+.cookie-notice-btn {
+  background-color: $accent-warm;
+  color: $primary;
+  font-family: $font-family-base;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  border: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover,
+  &:focus {
+    background-color: color.adjust($accent-warm, $lightness: -8%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba($accent-warm, 0.35);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .cookie-notice-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .cookie-notice-btn {
+    width: 100%;
   }
 }
 
@@ -455,7 +578,8 @@ html.js-animations {
   .product-list li,
   .expect-item,
   .contact-form-wrapper,
-  .contact-info {
+  .contact-info,
+  .table-wrapper {
     opacity: 0;
     transform: translateY(30px);
   }
@@ -540,8 +664,15 @@ html.lenis body {
   .expect-item,
   .contact-form-wrapper,
   .contact-info,
+  .table-wrapper,
   .credibility-text,
   .lead {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .cookie-notice {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;

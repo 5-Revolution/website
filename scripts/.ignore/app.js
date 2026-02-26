@@ -168,6 +168,7 @@ class SiteScrollAnimations {
     this.animateContactPage();
     this.animateLeadText();
     this.animateArticleCards();
+    this.animateTables();
   }
 
   animateSectionHeaders() {
@@ -434,6 +435,14 @@ class SiteScrollAnimations {
         opacity: 1, y: 0, duration: this.config.duration.normal,
         stagger: this.config.stagger.cards, ease: this.config.ease,
       }, row);
+    });
+  }
+
+  animateTables() {
+    this.newElements('.table-wrapper').forEach((wrapper) => {
+      this.animateOnScroll(wrapper, {
+        opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease,
+      }, wrapper);
     });
   }
 
@@ -770,7 +779,47 @@ class SiteProgressiveEnhancement extends core.ProgressiveEnhancement {
 }
 
 // ============================================
-// 7. Site Orchestrator
+// 7. Cookie Notice Banner
+// ============================================
+function initCookieNotice() {
+  if (document.body.classList.contains('optimize')) return;
+  if (localStorage.getItem('cookie_notice_dismissed') === '1') return;
+
+  const notice = document.createElement('div');
+  notice.className = 'cookie-notice';
+  notice.setAttribute('role', 'status');
+  notice.setAttribute('aria-live', 'polite');
+  notice.setAttribute('aria-label', 'Cookie notice');
+  notice.innerHTML = `
+    <div class="container"><div class="cookie-notice-inner">
+      <p class="cookie-notice-text">
+        This site uses cookies to measure performance and improve your experience.
+        <a href="/cookie-policy.html" class="cookie-notice-link">Cookie Policy</a>
+      </p>
+      <button type="button" class="cookie-notice-btn">Got It</button>
+    </div></div>`;
+
+  document.body.appendChild(notice);
+
+  // Entrance animation (rAF lets browser paint initial translateY(100%) first)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      notice.classList.add('cookie-notice-active');
+    });
+  });
+
+  notice.querySelector('.cookie-notice-btn').addEventListener('click', () => {
+    localStorage.setItem('cookie_notice_dismissed', '1');
+    notice.classList.add('cookie-notice-dismiss');
+    notice.classList.remove('cookie-notice-active');
+    notice.addEventListener('transitionend', () => notice.remove(), { once: true });
+    // Fallback if transitionend doesn't fire (reduced motion, etc.)
+    setTimeout(() => { if (notice.parentNode) notice.remove(); }, 300);
+  });
+}
+
+// ============================================
+// 8. Site Orchestrator
 // ============================================
 class SiteOrchestrator extends core.ExecutionOrchestrator {
   constructor() {
@@ -837,6 +886,9 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     // Phase 7: Heavy dependencies (Bootstrap, lazy CSS, modals)
     await core.ProgressiveEnhancement.loadHeavyDependencies();
     core.ProgressiveEnhancement.setupModalHandlers();
+
+    // Phase 7b: Cookie notice (non-blocking, after heavy deps)
+    initCookieNotice();
 
     // Phase 8: Analytics (skip localhost/nimbusedge)
     const isLocal = window.location.hostname === 'localhost' ||

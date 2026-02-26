@@ -1,0 +1,106 @@
+@import "../../../styles/.ignore/variables";
+
+// ============================================
+// Table Component
+// ============================================
+.table-wrapper {
+  border: 1px solid $subtleGray;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  thead th {
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: $primary;
+    border-bottom: 2px solid $subtleGray;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    color: $secondary;
+    border-bottom: 1px solid $subtleGray;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+// ============================================
+// Mobile: force horizontal scroll
+// ============================================
+@media (max-width: 767.98px) {
+  .data-table {
+    th,
+    td {
+      padding: 0.625rem 0.875rem;
+      white-space: nowrap;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .data-table {
+    th,
+    td {
+      white-space: normal;
+    }
+  }
+}
+
+// ============================================
+// .dark-header variant
+// ============================================
+.dark-header .data-table thead th {
+  background: $primary;
+  color: #fff;
+  border-bottom: none;
+
+  &:first-child {
+    border-top-left-radius: 5px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 5px;
+  }
+}
+
+// ============================================
+// .striped variant
+// ============================================
+.striped .data-table tbody tr:nth-child(even) {
+  background-color: rgba($primary, 0.03);
+}
+
+// ============================================
+// .max-w-800 modifier
+// ============================================
+.max-w-800 > .container {
+  max-width: 800px;
+}
+
+// ============================================
+// .minimal variant
+// ============================================
+.minimal {
+  .table-wrapper {
+    border: none;
+    border-radius: 0;
+  }
+
+  .data-table tbody td {
+    border-bottom-color: rgba($subtleGray, 0.6);
+  }
+}
