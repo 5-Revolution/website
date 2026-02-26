@@ -1655,11 +1655,16 @@ export class DeferredLoader {
       }
     });
 
-    // If page is optimize, load all components immediately without intersection observer
+    // If page is optimize, load all components sequentially (not in parallel).
+    // Sequential loading ensures DOM-dependent operations like .append work —
+    // a component that appends into a previous sibling needs that sibling's
+    // decorator to have completed first.
     if (document.body.classList.contains('optimize')) {
-      deferredComponents.forEach(component => {
-        this.loadAndExecuteComponent(component);
-      });
+      (async () => {
+        for (const component of deferredComponents) {
+          await this.loadAndExecuteComponent(component);
+        }
+      })();
       return deferredComponents.length;
     }
 
