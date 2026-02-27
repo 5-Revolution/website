@@ -367,21 +367,22 @@ section.labeled .default-wrapper {
 }
 
 .cookie-notice-btn {
-  background-color: $accent-warm;
-  color: $primary;
+  background-color: transparent;
+  color: $accent-warm;
   font-family: $font-family-base;
   font-weight: 600;
   font-size: 0.875rem;
   padding: 0.5rem 1.25rem;
   border-radius: 6px;
-  border: none;
+  border: 1px solid $accent-warm;
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover,
   &:focus {
-    background-color: color.adjust($accent-warm, $lightness: -8%);
+    background-color: $accent-warm;
+    color: $primary;
     transform: translateY(-1px);
     box-shadow: 0 4px 20px rgba($accent-warm, 0.35);
   }
