@@ -19,7 +19,15 @@
 const RECAPTCHA_SITE_KEY = '6LcZlGcsAAAAADIVM3BRh3uOTaLDip6H4RNL-GM8';
 
 export default async function initializeForm(component) {
-  if (component.dataset.status === 'loaded') return;
+  // Pre-rendered: form HTML exists but needs event listeners attached
+  if (component.dataset.status === 'loaded') {
+    const form = component.querySelector('form');
+    if (form && !form.dataset.listenersAttached) {
+      form.dataset.listenersAttached = '1';
+      setupFormValidation(form, { formId: form.id });
+    }
+    return;
+  }
 
   const { createElement, markLoaded } = await import('../../../scripts/app.js');
 
