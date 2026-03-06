@@ -887,7 +887,13 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     await core.ProgressiveEnhancement.loadHeavyDependencies();
     core.ProgressiveEnhancement.setupModalHandlers();
 
-    // Phase 7b: Cookie notice (non-blocking, after heavy deps)
+    // Phase 7b: Hydrate pre-rendered forms (attach submit listeners)
+    document.querySelectorAll('.component.form[data-status="loaded"]').forEach(async (component) => {
+      const { hydrateForm } = await import('/components/form/form.js');
+      hydrateForm(component);
+    });
+
+    // Phase 7c: Cookie notice (non-blocking, after heavy deps)
     initCookieNotice();
 
     // Phase 8: Analytics (skip localhost/nimbusedge)

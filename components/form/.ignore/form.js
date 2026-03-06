@@ -18,16 +18,19 @@
 
 const RECAPTCHA_SITE_KEY = '6LcZlGcsAAAAADIVM3BRh3uOTaLDip6H4RNL-GM8';
 
+/**
+ * Hydrate a pre-rendered form — attach event listeners only.
+ * Called from app.js delayed section for prerendered pages.
+ */
+export function hydrateForm(component) {
+  const form = component.querySelector('form');
+  if (!form || form.dataset.listenersAttached) return;
+  form.dataset.listenersAttached = '1';
+  setupFormValidation(form, { formId: form.id });
+}
+
 export default async function initializeForm(component) {
-  // Pre-rendered: form HTML exists but needs event listeners attached
-  if (component.dataset.status === 'loaded') {
-    const form = component.querySelector('form');
-    if (form && !form.dataset.listenersAttached) {
-      form.dataset.listenersAttached = '1';
-      setupFormValidation(form, { formId: form.id });
-    }
-    return;
-  }
+  if (component.dataset.status === 'loaded') return;
 
   const { createElement, markLoaded } = await import('../../../scripts/app.js');
 
