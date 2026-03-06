@@ -465,7 +465,11 @@ async function handleFormSubmit(event, formData) {
       }
     }
 
-    const payload = new FormData(form);
+    const formEntries = new FormData(form);
+    const payload = new URLSearchParams();
+    for (const [key, value] of formEntries.entries()) {
+      payload.append(key, value);
+    }
     payload.append('formId', formData.formId || 'unknown');
     payload.append('timestamp', new Date().toJSON());
     if (recaptchaToken) payload.append('recaptchaToken', recaptchaToken);
