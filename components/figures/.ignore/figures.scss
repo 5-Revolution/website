@@ -1,0 +1,38 @@
+@import "../../../styles/.ignore/variables";
+
+// ============================================
+// Figure Block
+// ============================================
+
+.figure-block {
+  margin: 0 0 2rem;
+}
+
+.figure-img {
+  overflow: hidden;
+
+  &.rounded {
+    border-radius: 12px;
+  }
+
+  picture {
+    display: block;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.figure-caption {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: $secondary;
+  line-height: 1.5;
+
+  p {
+    margin-bottom: 0;
+  }
+}

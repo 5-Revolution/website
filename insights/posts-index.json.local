@@ -1,0 +1,126 @@
+
+{
+  "schemaName": "posts-index",
+"generatedAt": "2026-02-09T21:34:22.617442234Z",
+"totalItems": 9,
+"data": [
+  {
+    "author": "Chris Carter",
+    "category": "business",
+    "description": "We've entered the 5th Industrial Revolution where human-AI collaboration transforms potential into measurable business value. Learn why Industry 5.0 shifts focus from data collection to value creation.",
+    "image": "/media/33581d9a22f9/3c809416/human-assisted-man-so.jpeg?crop=true\u0026crop_width=1200\u0026crop_height=630\u0026crop_x=center\u0026crop_y=center\u0026resize_mode=cover\u0026format=jpeg\u0026optimize=medium",
+    "publish_date": "Jan 17, 2026",
+    "tags": [
+      "enterprise ai",
+      "digital transformation"
+    ],
+    "title": "The Fifth Industrial Revolution: Where AI Finally Delivers Value",
+    "url": "/posts/the-fifth-industrial-revolution-where-ai-finally-delivers-value.html"
+  },
+  {
+    "author": "Chris Carter",
+    "category": "business",
+    "description": "AI workflow transformation insights on the profound changes driven from AI. Discover how AI-assisted processes are replacing linear workflows, creating higher demand for skilled professionals, and delivering measurable ROI. Learn practical strategies for workforce evolution, AI collaboration, and implementing iterative AI workflows across development, creative, and enterprise architecture domains.",
+    "image": "/media/33581d9a22f9/f5463df2/enterprise-architect.jpeg?crop=true\u0026crop_width=1200\u0026crop_height=630\u0026crop_x=center\u0026crop_y=center\u0026resize_mode=cover\u0026format=jpeg\u0026optimize=medium",
+    "publish_date": "Dec 22, 2025",
+    "tags": [
+      "enterprise architecture",
+      "enterprise ai"
+    ],
+    "title": "The Irreplaceable Value of Enterprise Architects in the AI Era",
+    "url": "/posts/enterprise-architects-in-the-ai-era.html"
+  },
+  {
+    "author": "Chris Carter",
+    "category": "ai",
+    "description": "The majority of companies fail to demonstrate AI value. Like the 1960s Space Race, most enterprises mistake watching for participating. Learn why foundation beats innovation.",
+    "image": "/media/33581d9a22f9/5318ea38/ai-moon-race.jpeg?crop=true\u0026crop_width=1200\u0026crop_height=630\u0026crop_x=center\u0026crop_y=center\u0026resize_mode=cover\u0026format=jpeg\u0026optimize=medium",
+    "publish_date": "Nov 3, 2025",
+    "tags": [
+      "enterprise ai"
+    ],
+    "title": "The AI Race to the Moon: Why the Majority are Failing",
+    "url": "/posts/ai-race-to-the-moon-why-the-majority-are-failing.html"
+  },
+  {
+    "author": "Chris Carter",
+    "category": "tech",
+    "description": "Fortune 500 companies are quietly returning to traditional CMS after failed headless migrations. Learn the real costs and when SPAs actually make sense.",
+    "image": "/media/33581d9a22f9/bcc4b42c/62a489c2-kix.32.jpeg?crop=true\u0026crop_width=1200\u0026crop_height=630\u0026crop_x=center\u0026crop_y=center\u0026resize_mode=cover\u0026format=jpeg\u0026optimize=medium",
+    "publish_date": "Oct 8, 2025",
+    "tags": [
+      "geo",
+      "cms"
+    ],
+    "title": "Considering a Headless Framework",
+    "url": "/posts/considering-a-headless-framework.html"
+  },
+  {
+    "author": "Chris Carter",
+    "category": "tech",
+    "description": "While others chase platform tactics, winning companies build customer intelligence foundations that work for Google, AI chatbots, and whatever comes next.",
+    "image": "/media/33581d9a22f9/cfdc9626/ai-search-social.jpeg?crop=true\u0026crop_width=1200\u0026crop_height=630\u0026crop_x=center\u0026crop_y=center\u0026resize_mode=cover\u0026format=jpeg\u0026optimize=medium",
+    "publish_date": "Sep 23, 2025",
+    "tags": [
+      "geo",
+      "enterprise ai"
+    ],
+    "title": "From SEO to GEO to AEO",
+    "url": "/posts/from-seo-to-geo-to-aeo.html"
+  },
+  {
+    "author": "Chris Carter",
+    "category": "ai",
+    "description": "AI workflow transformation insights on the profound changes driven from AI. Discover how AI-assisted processes are replacing linear workflows, creating higher demand for skilled professionals, and delivering measurable ROI. Learn practical strategies for workforce evolution, AI collaboration, and implementing iterative AI workflows across development, creative, and enterprise architecture domains.",
+    "image": "/media/33581d9a22f9/1f59166c/ai-transforming-the-workforce.jpeg?crop=true\u0026crop_width=1200\u0026crop_height=630\u0026crop_x=center\u0026crop_y=center\u0026resize_mode=cover\u0026format=jpeg\u0026optimize=medium",
+    "publish_date": "Sep 16, 2025",
+    "tags": [
+      "enterprise ai"
+    ],
+    "title": "AI is Fundamentally Transforming the Professional Workforce",
+    "url": "/posts/ai-fundamentally-transforming-workflows-and-workforce.html"
+  },
+  {
+    "author": "Chris Carter",
+    "category": "business",
+    "description": "Research shows 95% of AI initiatives fail due to poor data foundations. Learn the foundation-first approach that delivers measurable ROI for enterprise AI projects.",
+    "image": "/media/33581d9a22f9/4636a9a3/ai-foundation-social.jpeg?crop=true\u0026crop_width=1200\u0026crop_height=630\u0026crop_x=center\u0026crop_y=center\u0026resize_mode=cover\u0026format=jpeg\u0026optimize=medium",
+    "publish_date": "Sep 10, 2025",
+    "tags": [
+      "data foundation",
+      "ai strategy",
+      "enterprise ai"
+    ],
+    "title": "Enterprise AI Failure Rate 95 Percent - The Foundation First Solution",
+    "url": "/posts/foundation-first-solution-for-ai-failures.html"
+  },
+  {
+    "author": "Chris Carter",
+    "category": "tech",
+    "description": "Learn why enterprises develop technology solutions that solve today's problems but create future limitations, and discover strategies for building truly scalable systems.",
+    "publish_date": "Jan 17, 2025",
+    "tags": [
+      "email marketing"
+    ],
+    "title": "Beyond Today’s Quick Fix",
+    "url": "/posts/beyond-todays-quick-fix.html"
+  },
+  {
+    "author": "Chris Carter",
+    "category": "business",
+    "description": "Discover how brands can cut through the noise by using customer data to create meaningful, relevant communications. Learn why saying less and listening more builds stronger customer relationships and improves engagement across all channels.",
+    "image": "/media/33581d9a22f9/04d2be4c/man-overwhelmed-by-messages.jpeg?crop=true\u0026crop_width=1200\u0026crop_height=630\u0026crop_x=center\u0026crop_y=center\u0026resize_mode=cover\u0026format=jpeg\u0026optimize=medium",
+    "publish_date": "Jan 6, 2025",
+    "tags": [
+      "CDP",
+      "email marketing"
+    ],
+    "title": "Say Less, Be Heard More",
+    "url": "/posts/say-less-be-heard-more.html"
+  }
+],
+"metadata": {
+  "chunk_name": "",
+  "schema_version": "1.0"
+}
+}
