@@ -949,6 +949,22 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     // Phase 2: Non-critical CSS (non-blocking)
     this.preloadNonCriticalCSS();
 
+    // Phase 2b: Inject post-header on insight article pages
+    // Creates the component element; deferred loader handles initialization
+    const classes = document.body.className;
+    if (classes.includes('insights') && !classes.includes('insights__index')) {
+      const main = document.querySelector('main');
+      const sections = main ? main.querySelectorAll(':scope > section') : [];
+      if (sections.length >= 2) {
+        const target = sections[1].querySelector('.component.summary, .default-wrapper');
+        if (target && !sections[1].querySelector('.component.post-header')) {
+          const ph = document.createElement('div');
+          ph.className = 'component post-header';
+          target.parentNode.insertBefore(ph, target);
+        }
+      }
+    }
+
     // Phase 3: Deferred components (intersection observer)
     this.deferredLoader.observeNonCriticalComponents();
 
