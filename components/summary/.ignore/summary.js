@@ -3,7 +3,8 @@
  *
  * AI-generated summary callout for insight articles. Appears at the top of
  * article content with a sparkle icon and "AI Summary" label.
- * Includes animated expand/collapse and disclaimer footer.
+ * Decoration only: builds the summary box HTML structure.
+ * Expand/collapse interactivity is handled by app.js (setupSummaryToggle).
  *
  * CMS input (single column):
  *   <div><div>
@@ -59,28 +60,6 @@ function buildSummary(component, { createElement }) {
   toggle.setAttribute('aria-expanded', 'false');
   toggle.textContent = 'Show more';
 
-  // Capture the actual clamped height after render (from CSS line-clamp)
-  let clampedHeight = 0;
-  requestAnimationFrame(() => {
-    clampedHeight = content.offsetHeight;
-  });
-
-  const handleToggle = () => {
-    if (content.classList.contains('ai-summary-clamped')) {
-      expandContent(content, toggle, clampedHeight);
-    } else {
-      collapseContent(content, toggle, clampedHeight);
-    }
-  };
-
-  toggle.addEventListener('click', handleToggle);
-  toggle.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleToggle();
-    }
-  });
-
   // Disclaimer footer
   const footer = createElement('div', ['ai-summary-footer']);
   footer.textContent = 'Summary is AI generated and may contain inaccuracies.';
@@ -92,57 +71,4 @@ function buildSummary(component, { createElement }) {
 
   while (component.firstChild) component.removeChild(component.firstChild);
   component.appendChild(box);
-}
-
-function expandContent(content, toggle, clampedHeight) {
-  // Switch from clamped (line-clamp) to collapsing (block + transition)
-  content.classList.remove('ai-summary-clamped');
-  content.classList.add('ai-summary-collapsing');
-
-  const fullHeight = content.scrollHeight;
-
-  // Start at measured clamped height
-  content.style.height = `${clampedHeight}px`;
-
-  // Animate to full height
-  requestAnimationFrame(() => {
-    content.style.height = `${fullHeight}px`;
-  });
-
-  const onEnd = () => {
-    content.removeEventListener('transitionend', onEnd);
-    content.classList.remove('ai-summary-collapsing');
-    content.classList.add('ai-summary-expanded');
-    content.style.height = '';
-  };
-  content.addEventListener('transitionend', onEnd);
-
-  toggle.textContent = 'Show less';
-  toggle.setAttribute('aria-expanded', 'true');
-}
-
-function collapseContent(content, toggle, clampedHeight) {
-  // Lock current height
-  const fullHeight = content.scrollHeight;
-  content.style.height = `${fullHeight}px`;
-
-  // Switch from expanded to collapsing
-  content.classList.remove('ai-summary-expanded');
-  content.classList.add('ai-summary-collapsing');
-
-  // Animate to measured clamped height
-  requestAnimationFrame(() => {
-    content.style.height = `${clampedHeight}px`;
-  });
-
-  const onEnd = () => {
-    content.removeEventListener('transitionend', onEnd);
-    content.classList.remove('ai-summary-collapsing');
-    content.classList.add('ai-summary-clamped');
-    content.style.height = '';
-  };
-  content.addEventListener('transitionend', onEnd);
-
-  toggle.textContent = 'Show more';
-  toggle.setAttribute('aria-expanded', 'false');
 }
