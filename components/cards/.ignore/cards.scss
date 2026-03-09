@@ -6,7 +6,7 @@
 .card-item {
   background: #ffffff;
   border: 1px solid $subtleGray;
-  border-left: 3px solid transparent; // Reserve space for hover accent
+  border-left: 3px solid $subtleGray;
   border-radius: 12px;
   padding: 2.5rem;
   height: 100%;

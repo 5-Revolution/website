@@ -162,6 +162,7 @@ class SiteScrollAnimations {
     this.animateFeatureBlocks();
     this.animateCapabilityLists();
     this.animateBlockquotes();
+    this.animateAccordions();
     this.animateCTABlocks();
     this.animateProductLists();
     this.animateCredibilityText();
@@ -169,6 +170,7 @@ class SiteScrollAnimations {
     this.animateLeadText();
     this.animateArticleCards();
     this.animateTables();
+    this.animateSummary();
   }
 
   animateSectionHeaders() {
@@ -355,6 +357,18 @@ class SiteScrollAnimations {
     });
   }
 
+  animateAccordions() {
+    this.newElements('.accordion-group').forEach((group) => {
+      const items = group.querySelectorAll('.accordion-item');
+      this.animateOnScroll(items, {
+        opacity: 1, y: 0,
+        duration: this.config.duration.normal,
+        stagger: this.config.stagger.list,
+        ease: this.config.ease,
+      }, group);
+    });
+  }
+
   animateCTABlocks() {
     this.newElements('.cta-block').forEach((block) => {
       const h2 = block.querySelector('h2');
@@ -443,6 +457,14 @@ class SiteScrollAnimations {
       this.animateOnScroll(wrapper, {
         opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease,
       }, wrapper);
+    });
+  }
+
+  animateSummary() {
+    this.newElements('.ai-summary-box').forEach((box) => {
+      this.animateOnScroll(box, {
+        opacity: 1, y: 0, duration: this.config.duration.normal, ease: this.config.ease,
+      }, box);
     });
   }
 
@@ -741,6 +763,73 @@ class SiteProgressiveEnhancement extends core.ProgressiveEnhancement {
   }
 
   /**
+   * Inject post header (date + social shares) on insight article pages
+   * Runs on body classes containing "insights" but not "insights__index"
+   */
+  static injectPostHeader() {
+    const body = document.body;
+    const classes = body.className;
+    if (!classes.includes('insights') || classes.includes('insights__index')) return;
+
+    // Find the first section after the hero (second section in main)
+    const main = document.querySelector('main');
+    if (!main) return;
+    const sections = main.querySelectorAll(':scope > section');
+    if (sections.length < 2) return;
+
+    const targetSection = sections[1];
+
+    // Read publication date from meta tag (try multiple name formats)
+    const dateMeta = document.querySelector('meta[name="publication_date"]')
+      || document.querySelector('meta[name="publication-date"]')
+      || document.querySelector('meta[property="article:published_time"]');
+    const dateStr = dateMeta ? dateMeta.content : '';
+
+    // Format date nicely (e.g., "March 19, 2026")
+    let formattedDate = '';
+    if (dateStr) {
+      // Handle MM-DD-YYYY format
+      const mdyMatch = dateStr.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+      const d = mdyMatch
+        ? new Date(+mdyMatch[3], +mdyMatch[1] - 1, +mdyMatch[2])
+        : new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`);
+      if (!Number.isNaN(d.getTime())) {
+        formattedDate = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      }
+    }
+
+    // Build share URLs
+    const pageUrl = encodeURIComponent(window.location.href);
+    const pageTitle = encodeURIComponent(document.title);
+
+    const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${pageUrl}`;
+    const xUrl = `https://twitter.com/intent/tweet?text=${pageTitle}&url=${pageUrl}`;
+    const emailUrl = `mailto:?subject=${pageTitle}&body=${pageUrl}`;
+
+    // Build the post header element
+    const header = document.createElement('div');
+    header.className = 'post-header';
+    header.innerHTML = `
+      ${formattedDate ? `<div class="post-header-date">Published: ${formattedDate}</div>` : '<div class="post-header-date"></div>'}
+      <div class="post-header-share">
+        <span class="post-header-share-label">Share</span>
+        <a href="${linkedinUrl}" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="Share on LinkedIn">
+          <img src="/icons/linkedin.svg" alt="" width="18" height="18">
+        </a>
+        <a href="${xUrl}" target="_blank" rel="noopener noreferrer" aria-label="Share on X" title="Share on X">
+          <img src="/icons/x.svg" alt="" width="18" height="18">
+        </a>
+        <a href="${emailUrl}" aria-label="Share via email" title="Share via email">
+          <img src="/icons/email.svg" alt="" width="18" height="18">
+        </a>
+      </div>
+    `;
+
+    // Insert as the first child of the section itself (before any components)
+    targetSection.insertBefore(header, targetSection.firstChild);
+  }
+
+  /**
    * Load a script by appending a <script> tag (for IIFE/UMD vendor libraries)
    */
   static loadScript(src) {
@@ -844,6 +933,9 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
 
     // Phase 3: Deferred components (intersection observer)
     this.deferredLoader.observeNonCriticalComponents();
+
+    // Phase 3b: Inject post header on insight article pages
+    SiteProgressiveEnhancement.injectPostHeader();
 
     // Phase 4: Navigation behaviors
     SiteProgressiveEnhancement.setupSiteNavigation();

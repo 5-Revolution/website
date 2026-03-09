@@ -1,0 +1,72 @@
+@import "../../../styles/.ignore/variables";
+
+// ============================================
+// Pull Quote / Blockquote Feature
+// ============================================
+.blockquote-feature {
+  position: relative;
+  margin: 2rem 0;
+  padding: 2rem 0 2rem 2rem;
+  border-left: 3px solid $accent-warm;
+
+  p {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    font-weight: 500;
+    font-style: italic;
+    line-height: 1.5;
+    color: $primary;
+    margin-bottom: 0;
+
+    &:not(:last-child) {
+      margin-bottom: 1rem;
+    }
+  }
+
+  // Attribution line (if author adds one via em or small)
+  em, small {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-style: normal;
+    color: $secondary;
+    margin-top: 1rem;
+  }
+}
+
+// Centered variant
+.blockquote-feature.text-center {
+  border-left: none;
+  padding-left: 0;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid $subtleGray;
+
+  // Centered amber bar at top via background-image
+  background-image: linear-gradient($accent-warm, $accent-warm);
+  background-size: 3rem 3px;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+// Dark section context
+.section-dark .blockquote-feature {
+  p {
+    color: #ffffff;
+  }
+
+  em, small {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+// Responsive
+@media (max-width: 767.98px) {
+  .blockquote-feature {
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+
+    p {
+      font-size: 1.25rem;
+    }
+  }
+}

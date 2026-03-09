@@ -1,0 +1,160 @@
+@import "../../../styles/.ignore/variables";
+
+// ============================================
+// Summary Component (AI Summary)
+// ============================================
+
+// The CMS renders this as a <summary> element (display: list-item by default)
+.component.summary {
+  display: block;
+  list-style: none;
+
+  &::marker,
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.ai-summary-box {
+  background-color: rgba($primary, 0.03);
+  border: 1px solid rgba($primary, 0.08);
+  border-top: 3px solid $accent-warm;
+  border-radius: 8px;
+  padding: 1.5rem 1.75rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.ai-summary-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.875rem;
+}
+
+.ai-summary-icon {
+  width: 14px;
+  height: 14px;
+  color: $accent-warm;
+  flex-shrink: 0;
+}
+
+.ai-summary-label span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $accent-warm;
+}
+
+// ============================================
+// Content — Three states: clamped, collapsing, expanded
+// ============================================
+.ai-summary-content {
+  line-height: 1.6;
+  overflow: hidden;
+
+  p {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+    margin-bottom: 0;
+
+    &:not(:last-child) {
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  // Remove any list styling from CMS artifacts
+  ul, ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+// Resting collapsed state: line-clamp for clean text truncation
+.ai-summary-clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+// Transitional state: block display with height transition
+.ai-summary-collapsing {
+  display: block;
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Resting expanded state
+.ai-summary-expanded {
+  display: block;
+  height: auto;
+}
+
+// ============================================
+// Toggle Button
+// ============================================
+.ai-summary-toggle {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: $font-family-base;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $accent-warm;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent-warm;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+// ============================================
+// Disclaimer Footer
+// ============================================
+.ai-summary-footer {
+  margin-top: 0.75rem;
+  font-size: 0.6875rem;
+  color: $secondary;
+  opacity: 0.7;
+}
+
+// ============================================
+// Dark Section Context
+// ============================================
+.section-dark .ai-summary-box {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: $accent-warm;
+}
+
+.section-dark .ai-summary-content p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.section-dark .ai-summary-footer {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 767.98px) {
+  .ai-summary-box {
+    padding: 1.25rem 1.25rem;
+    margin: 0.25rem 0 0.75rem;
+  }
+
+  .ai-summary-content p {
+    font-size: 0.875rem;
+  }
+}

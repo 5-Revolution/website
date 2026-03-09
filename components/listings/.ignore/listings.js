@@ -8,7 +8,7 @@
  *   Row 1: Link to JSON source (e.g. /insights/posts-index.json)
  *   Row 2: Empty state content (shown when 0 posts — icon, heading, text)
  *
- * Schema: { data: [{ title, description, category, publish_date, tags, url, image, author }] }
+ * Schema: { data: [{ title, description, category, publish_date, tags, pillar, url, image }] }
  *
  * Behavior:
  *   0 posts  → Article grid not rendered, second CMS row shown as empty state

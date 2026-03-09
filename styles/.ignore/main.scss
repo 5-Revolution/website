@@ -149,12 +149,120 @@ section {
   padding-top: $section-spacing-sm;
   padding-bottom: $section-spacing-sm;
 
-  &.max-w-800 .default-wrapper {
+  // max-w-800: constrain component containers on article pages
+  .max-w-800 > .container,
+  .max-w-800.container {
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
   }
 
+  // Insight article pages: constrain classless sections to reading width, tight spacing
+  body[class*="insights"]:not([class*="insights__index"]) &:not([class]) {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+
+    @media (min-width: 768px) {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    @media (min-width: 1200px) {
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
+    }
+
+    .default-wrapper {
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+}
+
+// ============================================
+// Post Header (date + social shares)
+// Auto-injected on insight article pages
+// ============================================
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 800px;
+  margin: 0 auto 1rem;
+  padding: 0 1rem 0.75rem;
+  border-bottom: 1px solid $subtleGray;
+}
+
+.post-header-date {
+  font-size: 0.8125rem;
+  color: $secondary;
+}
+
+.post-header-share {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.post-header-share-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $secondary;
+}
+
+.post-header-share a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba($primary, 0.06);
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba($accent-warm, 0.15);
+  }
+
+  img {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover img {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .post-header {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .post-header-date {
+    font-size: 0.75rem;
+  }
+
+  .post-header-share-label {
+    display: none;
+  }
+
+  .post-header-share {
+    gap: 0.5rem;
+  }
+}
+
+// ============================================
+// Section continued (responsive breakpoints already below)
+// ============================================
+section {
   @media (min-width: 768px) {
     padding-top: $section-spacing-md;
     padding-bottom: $section-spacing-md;
@@ -460,7 +568,7 @@ section.labeled .default-wrapper {
 // Section Header + Accent Bar
 // ============================================
 .section-header {
-  max-width: 720px;
+  max-width: 800px;
   margin-bottom: 3rem;
 
   &.text-center {
@@ -573,6 +681,7 @@ html.js-animations {
   .feature-block,
   .capability-list li,
   .blockquote-feature,
+  .accordion-item,
   .cta-block h2,
   .cta-block p,
   .cta-block .btn,
@@ -580,7 +689,8 @@ html.js-animations {
   .expect-item,
   .contact-form-wrapper,
   .contact-info,
-  .table-wrapper {
+  .table-wrapper,
+  .ai-summary-box {
     opacity: 0;
     transform: translateY(30px);
   }
@@ -658,6 +768,7 @@ html.lenis body {
   .feature-block,
   .capability-list li,
   .blockquote-feature,
+  .accordion-item,
   .cta-block h2,
   .cta-block p,
   .cta-block .btn,
@@ -666,6 +777,7 @@ html.lenis body {
   .contact-form-wrapper,
   .contact-info,
   .table-wrapper,
+  .ai-summary-box,
   .credibility-text,
   .lead {
     opacity: 1 !important;

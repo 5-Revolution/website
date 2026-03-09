@@ -1,0 +1,256 @@
+@import "../../../styles/.ignore/variables";
+
+// ============================================
+// Accordion Group
+// ============================================
+.accordion-group {
+  margin: 0;
+}
+
+// ============================================
+// Accordion Item
+// ============================================
+.accordion-item {
+  border-bottom: 1px solid $subtleGray;
+
+  &:first-child {
+    border-top: 1px solid $subtleGray;
+  }
+}
+
+// Dark section variant
+.section-dark .accordion-item {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+// ============================================
+// Accordion Trigger (button)
+// ============================================
+.accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 1.5rem 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: $font-family-base;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    .accordion-question {
+      color: $accent-warm;
+    }
+
+    .accordion-icon {
+      border-color: $accent-warm;
+
+      &::before,
+      &::after {
+        background-color: $accent-warm;
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent-warm;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// ============================================
+// Accordion Question Text
+// ============================================
+.accordion-question {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $primary;
+  line-height: 1.4;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section-dark .accordion-question {
+  color: #ffffff;
+}
+
+// ============================================
+// Accordion Icon (+/- indicator)
+// ============================================
+// A minimal plus/minus using CSS pseudo-elements.
+// Rotates the vertical bar to form a minus on expand.
+.accordion-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 1.5px solid $subtleGray;
+  border-radius: 50%;
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Horizontal bar (always visible)
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 1.5px;
+    background-color: $secondary;
+    transform: translate(-50%, -50%);
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // Vertical bar (rotates to 0 on expand)
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.5px;
+    height: 10px;
+    background-color: $secondary;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// Expanded state: vertical bar fades/rotates to form minus
+.accordion-trigger[aria-expanded="true"] {
+  .accordion-icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+    opacity: 0;
+  }
+
+  .accordion-icon {
+    border-color: $accent-warm;
+
+    &::before {
+      background-color: $accent-warm;
+    }
+  }
+}
+
+// Dark section icon
+.section-dark .accordion-icon {
+  border-color: rgba(255, 255, 255, 0.2);
+
+  &::before,
+  &::after {
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+.section-dark .accordion-trigger[aria-expanded="true"] .accordion-icon {
+  border-color: $accent-warm;
+
+  &::before {
+    background-color: $accent-warm;
+  }
+}
+
+// ============================================
+// Accordion Panel (collapsible body)
+// ============================================
+.accordion-panel {
+  overflow: hidden;
+  height: 0;
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-body {
+  padding: 0 0 1.5rem 0;
+
+  p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 0;
+
+    &:not(:last-child) {
+      margin-bottom: 1rem;
+    }
+  }
+
+  ul, ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  a {
+    color: $accent-warm;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Dark section body text
+.section-dark .accordion-body {
+  p {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  ul, ol {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  a {
+    color: $accent-warm;
+  }
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 767.98px) {
+  .accordion-trigger {
+    padding: 1.25rem 0;
+    gap: 1rem;
+  }
+
+  .accordion-question {
+    font-size: 1rem;
+  }
+
+  .accordion-icon {
+    width: 20px;
+    height: 20px;
+
+    &::before {
+      width: 8px;
+    }
+
+    &::after {
+      height: 8px;
+    }
+  }
+
+  .accordion-body {
+    padding-bottom: 1.25rem;
+  }
+}
+
+// ============================================
+// Reduced Motion
+// ============================================
+@media (prefers-reduced-motion: reduce) {
+  .accordion-panel {
+    transition: none;
+  }
+
+  .accordion-icon,
+  .accordion-icon::before,
+  .accordion-icon::after,
+  .accordion-question {
+    transition: none;
+  }
+}
