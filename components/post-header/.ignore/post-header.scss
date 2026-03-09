@@ -7,6 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   max-width: 800px;
   margin: 0 auto 1rem;
   padding: 0 1rem 0.75rem;
@@ -22,6 +23,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  margin-left: auto;
 }
 
 .post-header-share-label {

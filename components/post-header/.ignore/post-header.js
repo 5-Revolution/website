@@ -44,12 +44,9 @@ function buildPostHeader(component, { createElement }) {
     }
   }
 
-  // Resolve page URL: prefer canonical link over window.location
-  // to avoid file:// paths during server-side prerendering
+  // Resolve page URL from canonical link (works in both prerender and browser)
   const canonical = document.querySelector('link[rel="canonical"]');
-  const pageUrl = canonical
-    ? canonical.href
-    : (window.location.protocol === 'file:' ? '' : window.location.href);
+  const pageUrl = canonical ? canonical.getAttribute('href') : window.location.pathname;
 
   const encodedUrl = encodeURIComponent(pageUrl);
   const encodedTitle = encodeURIComponent(document.title);
@@ -64,11 +61,13 @@ function buildPostHeader(component, { createElement }) {
     ? `mailto:?subject=${encodedTitle}&body=${encodedUrl}`
     : '#';
 
-  // Build the post header HTML
-  const header = createElement('div', ['post-header']);
-
+  // Build directly into the component element (no inner wrapper)
   const dateEl = createElement('div', ['post-header-date']);
-  if (formattedDate) dateEl.textContent = `Published: ${formattedDate}`;
+  if (formattedDate) {
+    dateEl.textContent = `Published: ${formattedDate}`;
+  } else {
+    dateEl.style.display = 'none';
+  }
 
   const share = createElement('div', ['post-header-share']);
   share.innerHTML = `
@@ -84,10 +83,7 @@ function buildPostHeader(component, { createElement }) {
     </a>
   `;
 
-  header.appendChild(dateEl);
-  header.appendChild(share);
-
-  // Clear any CMS placeholder content and insert the built header
   while (component.firstChild) component.removeChild(component.firstChild);
-  component.appendChild(header);
+  component.appendChild(dateEl);
+  component.appendChild(share);
 }
