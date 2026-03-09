@@ -8,7 +8,7 @@
  *   Row 1: Link to JSON source (e.g. /insights/posts-index.json)
  *   Row 2: Empty state content (shown when 0 posts — icon, heading, text)
  *
- * Schema: { data: [{ title, description, category, publish_date, tags, pillar, url, image }] }
+ * Schema: { data: [{ title, description, category, publish_date, tags, pillar, url, image, image_listing }] }
  *
  * Behavior:
  *   0 posts  → Article grid not rendered, second CMS row shown as empty state
@@ -124,10 +124,10 @@ function buildArticleCard(post, index, utils) {
   // Image
   const imageWrapper = createElement('div', ['article-card-image']);
 
-  if (post.image) {
+  if (post.image_listing) {
     const picture = createElement('picture');
     const img = createElement('img', ['article-card-img'], {
-      src: post.image,
+      src: post.image_listing,
       alt: post.title || '',
       width: '600',
       height: '338',
@@ -148,7 +148,7 @@ function buildArticleCard(post, index, utils) {
     imageWrapper.appendChild(picture);
   } else {
     // Branded SVG placeholder
-    imageWrapper.innerHTML = buildPlaceholderSVG();
+    imageWrapper.innerHTML = buildPlaceholderSVG(post.pillar);
   }
 
   card.appendChild(imageWrapper);
@@ -193,16 +193,28 @@ function buildArticleCard(post, index, utils) {
   return card;
 }
 
-function buildPlaceholderSVG() {
-  return `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g transform="translate(60,60)">
+function buildPlaceholderSVG(pillar) {
+  const pillarText = pillar
+    ? `<text x="160" y="148" text-anchor="middle" fill="#E8A012"
+        font-family="Satoshi, sans-serif" font-size="12" font-weight="700"
+        letter-spacing="0.2em" text-rendering="geometricPrecision"
+      >${escapeXml(pillar.toUpperCase())}</text>`
+    : '';
+
+  return `<svg viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(160,82)" opacity="0.18">
       <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(0)"/>
       <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(72)"/>
       <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(144)"/>
       <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(216)"/>
       <path d="M-9,-42 L0,-16 L9,-42" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" fill="none" transform="rotate(288)"/>
     </g>
+    ${pillarText}
   </svg>`;
+}
+
+function escapeXml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // ---------------------------------------------------------------------------
