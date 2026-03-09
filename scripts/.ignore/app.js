@@ -1013,10 +1013,19 @@ class SiteOrchestrator extends core.ExecutionOrchestrator {
     await core.ProgressiveEnhancement.loadHeavyDependencies();
     core.ProgressiveEnhancement.setupModalHandlers();
 
-    // Phase 7b: Hydrate pre-rendered forms (attach submit listeners)
+    // Phase 7b: Hydrate pre-rendered components (attach event listeners)
     document.querySelectorAll('.component.form[data-status="loaded"]').forEach(async (component) => {
       const { hydrateForm } = await import('/components/form/form.js');
       hydrateForm(component);
+    });
+
+    document.querySelectorAll('.component.accordions[data-status="loaded"]').forEach(async (component) => {
+      const { hydrateAccordions } = await import('/components/accordions/accordions.js');
+      hydrateAccordions(component);
+    });
+
+    document.querySelectorAll('.component.summary[data-status="loaded"]').forEach((component) => {
+      setupSummaryToggle(component);
     });
 
     // Phase 7c: Cookie notice (non-blocking, after heavy deps)

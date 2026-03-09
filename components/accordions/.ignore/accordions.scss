@@ -121,8 +121,12 @@
   }
 }
 
-// Expanded state: vertical bar fades/rotates to form minus
+// Expanded state: vertical bar fades/rotates to form minus, question text turns amber
 .accordion-trigger[aria-expanded="true"] {
+  .accordion-question {
+    color: $accent-warm;
+  }
+
   .accordion-icon::after {
     transform: translate(-50%, -50%) rotate(90deg);
     opacity: 0;

@@ -174,3 +174,25 @@ function collapsePanel(trigger, panel) {
   };
   panel.addEventListener('transitionend', onEnd, { once: true });
 }
+
+// ---------------------------------------------------------------------------
+// Hydration — attach event listeners to pre-rendered accordion HTML
+// ---------------------------------------------------------------------------
+export function hydrateAccordions(component) {
+  const group = component.querySelector('.accordion-group');
+  if (!group) return;
+
+  const allowMultiple = component.classList.contains('open-all');
+
+  group.querySelectorAll('.accordion-trigger').forEach((trigger) => {
+    if (trigger.dataset.hydrated) return;
+    trigger.dataset.hydrated = '1';
+
+    const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+    if (!panel) return;
+
+    trigger.addEventListener('click', () => {
+      toggleAccordion(trigger, panel, group, allowMultiple);
+    });
+  });
+}
