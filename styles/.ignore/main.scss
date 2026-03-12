@@ -149,8 +149,9 @@ section {
   padding-top: $section-spacing-sm;
   padding-bottom: $section-spacing-sm;
 
-  // max-w-800: constrain component containers on article pages
+  // max-w-800: constrain component containers and default-wrappers on article pages
   .max-w-800 > .container,
+  .max-w-800 > .default-wrapper,
   .max-w-800.container {
     max-width: 800px;
     margin-left: auto;
